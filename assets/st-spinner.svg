@@ -1,0 +1,11 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Spinner" clip-path="url(#clip0_0_5)">
+<circle id="Ellipse" cx="24" cy="24" r="21.5" stroke="#F8F8F8" stroke-width="5"/>
+<path id="Ellipse_2" d="M24.0191 7.60863e-06C29.6151 0.00446358 35.0337 1.96427 39.3378 5.54055C43.642 9.11684 46.5611 14.0848 47.5905 19.5853C48.6198 25.0858 47.6947 30.7731 44.9751 35.6639C42.2555 40.5546 37.9123 44.3412 32.6966 46.3689L31.653 43.6847C36.2428 41.9002 40.0648 38.568 42.4581 34.2642C44.8514 29.9604 45.6655 24.9555 44.7596 20.115C43.8538 15.2746 41.2849 10.9028 37.4973 7.75569C33.7096 4.60856 28.9413 2.88393 24.0168 2.88001L24.0191 7.60863e-06Z" fill="#DA291C"/>
+</g>
+<defs>
+<clipPath id="clip0_0_5">
+<rect width="48" height="48" fill="white"/>
+</clipPath>
+</defs>
+</svg>
