@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Porteira de CEP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Breakpoints: mobile (frame 360px) < 1024px <= desktop (frame 1440px) */
+:root {
+  --red: #da291c; --red-dark: #b41e13; --ink: #1f1d1d; --ink-2: #525252; --line: #dbdbdb; --bg: #f8f8f8; --white: #fff;
+  --btn: #e3262e; --font-hl: 'AMX', 'Roboto', Arial, sans-serif; --font-base: 'Roboto', Arial, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { background: var(--white); color: var(--ink); font-family: var(--font-base); line-height: 1.3; -webkit-font-smoothing: antialiased; }
+img { display: block; max-width: none; }
+p, h1, h2, h3 { margin: 0; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; border: 0; background: none; padding: 0; }
+
+/* ---------- Header ---------- */
+.p-header { background: var(--red); height: 70px; }
+.p-header .in { position: relative; height: 100%; max-width: 1440px; margin: 0 auto; }
+.p-header img { position: absolute; left: 88px; top: 16px; width: 89px; height: 38px; }
+.p-header .m { display: none; }
+
+/* ---------- Banner ---------- */
+.p-banner { position: relative; height: 250px; overflow: hidden; background: #000; }
+.p-banner > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 40%; }
+.p-banner::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0) 39.8%, rgba(0,0,0,.76) 84%); }
+.p-banner .in { position: relative; z-index: 1; height: 100%; max-width: 1440px; margin: 0 auto; }
+.p-banner h1 { position: absolute; left: calc(50% + 113px); top: 93px; width: 412px; font-family: var(--font-hl); font-weight: 700; font-size: 28.6px; line-height: 1.1; color: var(--white); }
+
+/* ---------- Conteúdo ---------- */
+.p-main { max-width: 1088px; margin: 0 auto; padding: 42px 0 64px; display: grid; grid-template-columns: 544px 454px; justify-content: space-between; align-items: start; }
+.p-lead { grid-column: 1 / -1; width: 510px; font-size: 16px; line-height: 1.3; color: rgba(0,0,0,.69); margin-bottom: 44px; }
+.p-form { grid-column: 1; display: flex; flex-direction: column; }
+.p-rows { display: flex; flex-direction: column; gap: 32px; }
+.p-two { display: grid; grid-template-columns: 255px 256px; gap: 32px; }
+.p-nonum { margin: 16px 0 0 auto; width: 256px; }
+.p-submit { margin-top: 64px; width: 100%; height: 48px; border-radius: 25px; background: var(--btn); color: var(--white); font-weight: 500; font-size: 16px; line-height: 16px; }
+.p-submit[aria-disabled="true"] { opacity: .32; cursor: default; }
+.p-accept { margin-top: 32px; align-self: center; }
+.p-aside { grid-column: 2; grid-row: 2; }
+
+/* campo com rótulo flutuante */
+.pf { position: relative; height: 54px; border: 1px solid var(--ink); border-radius: 12px; background: var(--white); }
+.pf input { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; border-radius: 12px; padding: 0 17px; font: 400 16px/1 var(--font-base); color: var(--ink); outline: 0; }
+.pf input::placeholder { color: var(--ink); opacity: 1; }
+.pf label { position: absolute; left: 17px; top: 9px; font-size: 12px; line-height: 1; display: none; pointer-events: none; }
+.pf input:not(:placeholder-shown) { padding-top: 22px; font-weight: 500; }
+.pf input:not(:placeholder-shown) + label { display: block; }
+.pf:focus-within { box-shadow: 0 0 0 .5px var(--ink); }
+.pf.err { border-color: #b84d01; }
+.pf.dis { opacity: .5; }
+.p-err { color: #b84d01; font-size: 12px; font-weight: 500; padding-left: 17px; margin-top: 4px; }
+.p-err:empty { display: none; }
+
+/* checkbox */
+.p-check { display: flex; gap: 8px; align-items: center; cursor: pointer; font-weight: 500; font-size: 14px; line-height: 1.3; color: var(--ink); }
+.p-check.lg { font-size: 16px; }
+.p-check input { position: absolute; opacity: 0; width: 0; height: 0; }
+.p-check .box { position: relative; width: 24px; height: 24px; flex: none; border: 2px solid #d4d7de; border-radius: 4px; background: var(--white); }
+.p-check .box img { position: absolute; left: 2px; top: 2px; width: 16px; height: 16px; display: none; }
+.p-check input:checked ~ .box img { display: block; }
+.p-check input:focus-visible ~ .box { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* É cliente Claro? */
+.p-cliente { position: relative; display: flex; align-items: center; gap: 16px; height: 82px; padding: 0 24px 0 20px; background: var(--white); border-radius: 16px; box-shadow: 0 4px 8px -4px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.04), 0 2px 12px rgba(0,0,0,.08); }
+.p-cliente > img:first-child { width: 35px; height: 35px; }
+.p-cliente .t { flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.p-cliente b { font-size: 16px; font-weight: 700; color: #000; }
+.p-cliente span { font-size: 12px; color: #51555d; }
+.p-cliente > img:last-child { width: 10px; height: 17px; }
+
+/* ---------- Footer ---------- */
+.p-footer { background: var(--red); height: 96px; color: var(--white); }
+.p-footer .in { position: relative; height: 100%; max-width: 1440px; margin: 0 auto; }
+.p-footer .info { position: absolute; left: 88px; top: 24px; display: flex; flex-direction: column; gap: 8px; }
+.p-footer .links { display: flex; gap: 16px; align-items: center; font-size: 12px; font-weight: 500; }
+.p-footer .links a { text-decoration: underline; white-space: nowrap; }
+.p-footer .libras { width: 24px; height: 24px; flex: none; }
+.p-footer .legal { font-size: 12px; font-weight: 500; white-space: nowrap; }
+.p-footer .legal br { display: none; }
+.p-footer .logo { position: absolute; right: 88px; top: 24px; width: 48px; height: 48px; }
+.p-footer .sep { display: inline; }
+
+/* ---------- Overlay (camada preta 75%) ---------- */
+.geo-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 100; }
+.geo-overlay[hidden] { display: none; }
+.geo-open { overflow: hidden; }
+.addr-submit:focus, .addr-submit:focus-visible, .st-x:focus, .st-x:focus-visible { outline: none; -webkit-tap-highlight-color: transparent; }
+
+/* ================= MOBILE ================= */
+@media (max-width: 1023px) {
+  .p-header { height: 64px; }
+  .p-header .d { display: none; }
+  .p-header .m { display: block; left: 16px; width: 75px; height: 32px; }
+  .p-banner { height: 159px; }
+  .p-banner > img { object-position: center; }
+  .p-banner::after { background: linear-gradient(90deg, rgba(0,0,0,0) 40%, rgba(28,28,28,.7) 55%); }
+  .p-banner h1 { left: 50%; top: 50%; transform: translateY(-58%); width: 44%; max-width: 330px; font-size: 15.9px; }
+  .p-main { display: block; padding: 33px 16px 64px; max-width: 520px; }
+  .p-lead { width: auto; font-size: 14px; margin-bottom: 32px; }
+  .p-two { grid-template-columns: 1fr; gap: 32px; }
+  .p-nonum { margin: 18px 0 0; width: auto; }
+  .p-submit { margin-top: 20px; }
+  .p-accept { margin: 32px auto 0; width: max-content; max-width: 100%; }
+  .p-accept span:last-child { font-size: 14px; }
+  .p-aside { margin: 64px 0 0; }
+  .p-cliente { padding-left: 20px; }
+  .p-footer { height: auto; padding: 16px 16px 24px; }
+  .p-footer .in { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .p-footer .logo { position: static; width: 48px; height: 48px; order: -1; }
+  .p-footer .info { position: static; align-items: center; gap: 8px; margin-top: 0; }
+  .p-footer .legal { text-align: center; line-height: 1.3; }
+  .p-footer .legal br { display: inline; }
+  .p-footer .sep { display: none; }
+}
+@media (max-width: 359px) { .p-footer .links { gap: 10px; } .p-footer .legal { white-space: normal; } }
+
+/* ---------- Modal de endereço ---------- */
+.addr-modal { position: fixed; z-index: 102; background: var(--white); color: var(--ink); display: flex; }
+.addr-modal[hidden] { display: none; }
+.addr-art { position: relative; background: var(--red-dark); overflow: hidden; flex: none; }
+.addr-map { position: absolute; overflow: hidden; pointer-events: none; }
+.addr-map img { position: absolute; height: 323.93%; left: -58.24%; top: -112.18%; width: 216.64%; max-width: none; }
+.addr-pin { position: absolute; mix-blend-mode: color-dodge; pointer-events: none; }
+.addr-pin img { width: 100%; height: 100%; object-fit: contain; object-position: bottom; }
+.addr-body { display: flex; flex-direction: column; }
+.addr-title { font-family: var(--font-hl); font-weight: 700; color: #000; line-height: 1.3; margin: 0; }
+.addr-lead { font-size: 16px; line-height: 1.3; }
+.addr-form { display: flex; flex-direction: column; gap: 16px; width: 100%; }
+.addr-fields { display: flex; flex-direction: column; gap: 24px; }
+.field { position: relative; height: 48px; border: 1px solid var(--ink); border-radius: 12px; background: var(--white); }
+.field input { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; border-radius: 12px; padding: 0 17px; font: 400 16px/1 var(--font-base); color: var(--ink); outline: 0; }
+.field input::placeholder { color: var(--ink); opacity: 1; }
+.field label { position: absolute; left: 17px; top: 6px; font-size: 12px; line-height: 1; display: none; pointer-events: none; }
+.field input:not(:placeholder-shown) { padding-top: 20px; font-weight: 500; }
+.field input:not(:placeholder-shown) + label { display: block; }
+.field:focus-within { box-shadow: 0 0 0 .5px var(--ink); }
+.field.err { border-color: var(--red); }
+.addr-err { color: var(--red); font-size: 12px; font-weight: 500; margin-top: 4px; min-height: 0; }
+.addr-check { display: flex; gap: 8px; align-items: center; font-weight: 700; font-size: 14px; line-height: 1.5; color: var(--ink-2); cursor: pointer; }
+.addr-check input { position: absolute; opacity: 0; width: 0; height: 0; }
+.addr-check .box { position: relative; width: 24px; height: 24px; flex: none; }
+.addr-check .box img { width: 24px; height: 24px; }
+.addr-check .box::after { content: ""; position: absolute; left: 2px; top: 2px; width: 20px; height: 20px; border-radius: 3px; background: var(--red); display: none; }
+.addr-check .box::before { content: ""; position: absolute; left: 9px; top: 5px; width: 6px; height: 11px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); z-index: 1; display: none; }
+.addr-check input:checked ~ .box::after, .addr-check input:checked ~ .box::before { display: block; }
+.addr-check input:focus-visible ~ .box { outline: 2px solid var(--ink); outline-offset: 2px; }
+.addr-submit { height: 48px; border-radius: 500px; background: var(--red); color: var(--white); font-weight: 500; font-size: 16px; line-height: 1; padding: 16px 32px; display: flex; align-items: center; justify-content: center; border: 0; cursor: pointer; }
+.addr-submit[aria-disabled="true"] { opacity: .32; cursor: default; }
+
+/* mobile: bottom sheet */
+.addr-modal { left: 0; right: 0; bottom: 0; margin: 0 auto; width: 100%; max-width: 480px; flex-direction: column; border-radius: 24px 24px 0 0; box-shadow: -4px 4px 16px rgba(0,0,0,.16); padding-bottom: 24px; gap: 24px; transform: translateY(105%); transition: transform .3s ease; }
+.addr-modal.open { transform: translateY(0); }
+.addr-art { height: 120px; border-radius: 24px 24px 0 0; width: 100%; }
+.addr-art .addr-map { width: 222px; height: 155.37px; left: calc(50% - 111px + 0px); top: 33.59px; }
+.addr-art .addr-pin { width: 65.59px; height: 105.8px; left: calc(50% - 50.5px); top: -8px; }
+.addr-body { padding: 0 16px; gap: 18px; }
+.addr-main { display: flex; flex-direction: column; gap: 18px; }
+.addr-title { font-size: 22px; }
+.addr-x-d { display: none; }
+.addr-submit { width: 100%; margin-top: 6px; }
+@media (min-width: 1024px) {
+  .addr-modal { left: 50%; top: 50%; bottom: auto; right: auto; width: 672px; max-width: calc(100% - 32px); margin: 0; flex-direction: row; border-radius: 12px; box-shadow: none; padding: 0 16px 0 0; gap: 16px; align-items: stretch; transform: translate(-50%, -46%); opacity: 0; transition: transform .25s ease, opacity .25s ease; }
+  .addr-modal.open { transform: translate(-50%, -50%); opacity: 1; }
+  .addr-art { width: 296px; height: auto; border-radius: 12px 0 0 12px; }
+  .addr-art .addr-map { width: 340.39px; height: 238.23px; left: 0; top: calc(56.5px + 63.77px); }
+  .addr-art .addr-pin { width: 100.57px; height: 162.23px; left: calc(27px + 92.83px); top: 56.5px; }
+  .addr-body { flex: 1; padding: 0; gap: 0; justify-content: space-between; min-width: 0; }
+  .addr-head-d { display: flex; align-items: flex-start; gap: 16px; padding: 24px 0; }
+  .addr-head-d .addr-title { flex: 1; font-size: 24px; color: var(--ink); }
+  .addr-x-d { display: block; width: 24px; height: 24px; flex: none; }
+  .addr-x-d img { width: 24px; height: 24px; }
+  .addr-main { display: flex; flex-direction: column; gap: 18px; padding-bottom: 24px; align-items: center; }
+  .addr-main > * { width: 100%; }
+  .addr-submit { width: 328px; margin: 0; }
+  .addr-head-d .addr-title { margin: 0; }
+  }
+
+
+/* ---------- Modal: seleção de rua ---------- */
+.st-modal { flex-direction: column; padding: 16px 24px 24px; gap: 16px; }
+.st-body { display: flex; flex-direction: column; gap: 16px; min-height: 0; }
+.st-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.st-title { flex: 1; font-family: var(--font-hl); font-weight: 700; font-size: 20px; line-height: 1.3; color: var(--ink); margin: 0; }
+.st-x { width: 24px; height: 24px; flex: none; }
+.st-x img { width: 24px; height: 24px; }
+.st-lead { font-size: 16px; line-height: 1.3; color: var(--ink-2); }
+.st-edit { align-self: flex-start; display: flex; align-items: center; gap: 16px; text-align: left; cursor: pointer; max-width: 100%; }
+.st-lapis { width: 20px; height: 20px; flex: none; }
+.st-chip { display: flex; align-items: center; gap: 8px; background: var(--bg); border-radius: 8px; padding: 8px 12px; font-weight: 500; font-size: 14px; line-height: 1.3; color: var(--ink-2); white-space: nowrap; }
+.st-chip img { width: 20px; height: 20px; }
+.st-field { position: relative; height: 46px; border: 1px solid var(--ink); border-radius: 12px; background: var(--white); }
+.st-field[hidden] { display: none; }
+.st-field input { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; border-radius: 12px; padding: 0 49px; font: 400 16px/1 var(--font-base); color: var(--ink); outline: 0; }
+.st-field input::placeholder { color: var(--ink); opacity: 1; }
+.st-field input:not(:placeholder-shown) { padding-top: 17px; font-weight: 500; }
+.st-field label { position: absolute; left: 49px; top: 8px; font-size: 12px; line-height: 1; display: none; pointer-events: none; }
+.st-field input:not(:placeholder-shown) + label { display: block; }
+.st-field:focus-within { box-shadow: 0 0 0 .5px var(--ink); }
+.st-field .lupa { position: absolute; left: 17px; top: 10px; width: 24px; height: 24px; pointer-events: none; }
+.st-field .clr { position: absolute; right: 17px; top: 10px; width: 24px; height: 24px; display: none; }
+.st-field .clr img, .st-field .lupa { width: 24px; height: 24px; }
+.st-field input:not(:placeholder-shown) ~ .clr { display: block; }
+.st-hint { font-size: 14px; line-height: 1.3; color: var(--ink-2); margin: 0; }
+.st-hint[hidden] { display: none; }
+.st-list { display: flex; flex-direction: column; overflow-y: auto; max-height: min(52vh, 380px); }
+.st-item { display: grid; grid-template-columns: 24px 1fr; column-gap: 8px; row-gap: 4px; align-items: center; padding: 12px 0; cursor: pointer; border-top: 1px solid var(--bg); }
+.st-item:first-child { border-top: 0; }
+.st-item input { position: absolute; opacity: 0; width: 0; height: 0; }
+.st-radio { position: relative; width: 24px; height: 24px; border: 2px solid var(--ink-2); border-radius: 500px; background: var(--white); box-sizing: border-box; }
+.st-radio::after { content: ""; position: absolute; left: 4px; top: 4px; width: 12px; height: 12px; border-radius: 12px; background: var(--teal); display: none; }
+.st-item input:checked + .st-radio::after { display: block; }
+.st-item input:focus-visible + .st-radio { box-shadow: 0 0 0 2px rgba(31,29,29,.25); }
+.st-name { font-weight: 500; font-size: 16px; line-height: 1.3; color: var(--ink); }
+.st-name b { font-weight: 700; }
+.st-bairro { grid-column: 2; font-size: 14px; line-height: 1.3; color: var(--ink-2); }
+.st-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px 0; min-height: 185px; text-align: center; }
+.st-empty .ico { width: 56px; height: 56px; border-radius: 28px; background: var(--bg); display: flex; align-items: center; justify-content: center; }
+.st-empty .ico img { width: 28px; height: 28px; }
+.st-empty .t { font-weight: 700; font-size: 16px; line-height: 1.3; color: var(--ink); }
+.st-empty .s { font-size: 14px; line-height: 1.3; color: var(--ink-2); }
+.st-submit { width: 100%; margin-top: 0; }
+@media (min-width: 1024px) {
+  .st-modal { width: 640px; flex-direction: column; padding: 16px 30px 30px; gap: 16px; border-radius: 12px; box-shadow: 0 0 16px 2px rgba(0,0,0,.25); align-items: stretch; }
+  .st-list { max-height: 260px; }
+  .st-empty { min-height: 260px; }
+}
+
+
+/* ---------- Consultando disponibilidade ---------- */
+.ld-modal { flex-direction: column; padding: 16px 24px 24px; gap: 0; }
+.ld-top { display: none; }
+.ld-body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 40px 0; text-align: center; }
+.ld-spinner { width: 48px; height: 48px; animation: ld-spin 1s linear infinite; }
+@keyframes ld-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .ld-spinner { animation-duration: 2.5s; } }
+.ld-title { font-weight: 700; font-size: 16px; line-height: 1.3; color: var(--ink); }
+.ld-addr { font-size: 14px; line-height: 1.3; color: var(--ink-2); max-width: 100%; }
+.ld-addr span { display: block; }
+@media (min-width: 1024px) {
+  .ld-modal { width: 640px; padding: 16px 30px 30px; border-radius: 12px; box-shadow: 0 0 16px 2px rgba(0,0,0,.25); }
+  .ld-top { display: flex; justify-content: flex-end; }
+  .ld-body { flex: 1; padding: 40px 0; }
+  .ld-addr { max-width: none; }
+}
+
+.addr-modal.st-modal, .addr-modal.ld-modal { z-index: 102; }
+</style>
+</head>
+<body>
+
+<div class="geo-overlay" id="geoOverlay" aria-hidden="true" hidden></div>
+
+<div class="addr-modal st-modal" id="stModal" role="dialog" aria-modal="true" aria-labelledby="stTitle" hidden>
+  <div class="st-body">
+    <div class="st-head">
+      <h2 class="st-title" id="stTitle">Selecione a sua rua</h2>
+      <button class="st-x" id="stClose" type="button" aria-label="Fechar"><img src="assets/st-close-m.svg" alt=""></button>
+    </div>
+    <p class="st-lead" id="stLead"></p>
+    <button class="st-edit" id="stEdit" type="button" aria-label="Editar CEP e número">
+      <span class="st-chip"><img src="assets/st-pin.svg" alt=""><span id="stChip"></span></span>
+      <img class="st-lapis" src="assets/st-lapis.svg" alt="">
+    </button>
+    <div class="st-field" id="stSearchWrap" hidden>
+      <img class="lupa" src="assets/st-lupa.svg" alt="">
+      <input id="stSearch" type="text" autocomplete="off" placeholder="Rua ou bairro" aria-label="Rua ou bairro">
+      <label for="stSearch">Rua ou bairro</label>
+      <button class="clr" id="stClear" type="button" aria-label="Limpar busca"><img src="assets/st-clear.svg" alt=""></button>
+    </div>
+    <p class="st-hint" id="stHint" hidden></p>
+    <div class="st-list" id="stList" role="radiogroup" aria-label="Ruas"></div>
+  </div>
+  <button class="addr-submit st-submit" id="stSubmit" type="button" aria-disabled="true">Avançar</button>
+</div>
+
+
+<!-- ===== Modal: consultando disponibilidade ===== -->
+<div class="addr-modal ld-modal" id="ldModal" role="dialog" aria-modal="true" aria-labelledby="ldTitle" aria-live="polite" hidden>
+  <div class="ld-top"><button class="st-x" id="ldClose" type="button" aria-label="Fechar"><img src="assets/st-close-m.svg" alt=""></button></div>
+  <div class="ld-body">
+    <img class="ld-spinner" src="assets/st-spinner.svg" alt="">
+    <p class="ld-title" id="ldTitle">Consultando disponibilidade…</p>
+    <p class="ld-addr"><span id="ldL1"></span><span id="ldL2"></span></p>
+  </div>
+</div>
+
+<!-- ===== Menu ===== -->
+
+<header class="p-header"><div class="in">
+  <img class="d" src="assets/pt-logo-d.svg" alt="Claro">
+  <img class="m" src="assets/pt-logo-m.svg" alt="Claro">
+</div></header>
+
+<section class="p-banner"><img src="assets/pt-banner.png" alt=""><div class="in"><h1>Em apenas 3 minutos você leva o melhor da Claro para sua casa!</h1></div></section>
+
+<main class="p-main">
+  <p class="p-lead">Digite seus dados para consultar a cobertura da sua região e visualizar as melhores ofertas.</p>
+
+  <form class="p-form" id="pForm" novalidate>
+    <div class="p-rows">
+      <div class="pf" id="pfNome"><input id="pNome" autocomplete="name" placeholder="Nome Completo*" aria-label="Nome Completo"><label for="pNome">Nome Completo*</label></div>
+      <div class="pf" id="pfCel"><input id="pCel" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="15" placeholder="Celular*" aria-label="Celular"><label for="pCel">Celular*</label></div>
+      <div class="p-two">
+        <div>
+          <div class="pf" id="pfCep"><input id="pCep" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="CEP*" aria-label="CEP"><label for="pCep">CEP*</label></div>
+          <div class="p-err" id="pCepErr" role="alert"></div>
+        </div>
+        <div class="pf" id="pfNum"><input id="pNum" autocomplete="off" maxlength="8" placeholder="Número*" aria-label="Número"><label for="pNum">Número*</label></div>
+      </div>
+    </div>
+    <label class="p-check p-nonum"><input type="checkbox" id="pNoNum"><span class="box"><img src="assets/pt-check.svg" alt=""></span><span>Meu endereço não possui número</span></label>
+    <button class="p-submit" id="pSubmit" type="submit" aria-disabled="true">Consultar disponibilidade</button>
+    <label class="p-check lg p-accept"><input type="checkbox" id="pAccept" checked><span class="box"><img src="assets/pt-check.svg" alt=""></span><span>Aceito receber comunicações e ofertas.</span></label>
+  </form>
+
+  <aside class="p-aside">
+    <a class="p-cliente" href="#">
+      <img src="assets/pt-cliente.svg" alt="">
+      <span class="t"><b>É cliente Claro?</b><span>Faça login e consulte ofertas exclusivas</span></span>
+      <img src="assets/pt-direita.svg" alt="">
+    </a>
+  </aside>
+</main>
+
+<footer class="p-footer"><div class="in">
+  <div class="info">
+    <div class="links"><a href="#">Política de Privacidade</a><a href="#">Portal de Privacidade</a><img class="libras" src="assets/footer-libras.svg" alt="Libras"></div>
+    <p class="legal">©2024 Claro. Todos os direitos reservados<span class="sep"> - </span><br>CNPJ: 40.432.544/0001-47<span class="sep"> - </span><br>Rua Henri Dunant, 780 - São Paulo - SP</p>
+  </div>
+  <img class="logo" src="assets/pt-footer-logo.png" alt="Claro">
+</div></footer>
+
+<script>
+/* Camada de dados de ruas por CEP único.
+   HOJE: base de teste local (ENDERECOS_TESTE). DEPOIS: trocar o corpo de buscarRuas/pesquisarRuas
+   pela chamada à API real, mantendo o formato de retorno. */
+(function () {
+  var ENDERECOS_TESTE = {
+    '97200000': [ /* Restinga Seca/RS: mais de 10 ruas -> fase de busca */
+      { logradouro: 'Rua 25 de Julho', bairro: 'São Luiz' },
+      { logradouro: 'Rua 25 de Março', bairro: 'São Luiz' },
+      { logradouro: 'Rua A Vila Felim', bairro: 'Vila Felim' },
+      { logradouro: 'Rua Adão Mário de O. Dorneles', bairro: 'Bela Vista' },
+      { logradouro: 'Rua Afonso Potter', bairro: 'São Luiz' },
+      { logradouro: 'Travessa Afonso Pena', bairro: 'Centro' },
+      { logradouro: 'Avenida Afonso Arinos', bairro: 'Bela Vista' },
+      { logradouro: 'Rua Coronel Horácio Borges', bairro: 'Centro' },
+      { logradouro: 'Rua Sete de Setembro', bairro: 'Centro' },
+      { logradouro: 'Rua Marechal Floriano', bairro: 'Centro' },
+      { logradouro: 'Avenida Brasil', bairro: 'Centro' },
+      { logradouro: 'Rua Júlio de Castilhos', bairro: 'Centro' },
+      { logradouro: 'Rua General Osório', bairro: 'Bela Vista' },
+      { logradouro: 'Rua Bento Gonçalves', bairro: 'São Luiz' }
+    ],
+    '18420000': [ /* Itapeva/SP: até 10 ruas -> fase de lista */
+      { logradouro: 'Rua Marília', bairro: 'Vila Taquari' },
+      { logradouro: 'Rua Maranhão', bairro: 'Vila Nova' },
+      { logradouro: 'Rua Maria de Lima', bairro: 'Jardim Grajaú' },
+      { logradouro: 'Rua Maria Raimunda', bairro: 'Vila Aparecida' },
+      { logradouro: 'Rua Mário Prandini', bairro: 'Jardim Ferrari' }
+    ]
+  };
+  function ruasDoCep(d) { return ENDERECOS_TESTE[(d.cep || '').replace(/\D/g, '')] || null; }
+  function norm(t) { return t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  /* -> { modo: 'lista' | 'busca', total, ruas } ou null (CEP sem ruas cadastradas) */
+  window.buscarRuas = function (d) {
+    var rs = ruasDoCep(d); if (!rs) return null;
+    return rs.length <= 10 ? { modo: 'lista', total: rs.length, ruas: rs } : { modo: 'busca', total: rs.length, ruas: [] };
+  };
+  /* termo com 3+ letras; casa com o nome da rua ou o bairro, sem acento/maiúscula */
+  window.pesquisarRuas = function (d, termo) {
+    var rs = ruasDoCep(d) || [], t = norm(termo);
+    return rs.filter(function (r) { return norm(r.logradouro).indexOf(t) >= 0 || norm(r.bairro).indexOf(t) >= 0; });
+  };
+})();
+/* Porteira: o formulário da página substitui o 1º modal (CEP + número) */
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var overlay = $('geoOverlay'), stModal = $('stModal'), ldModal = $('ldModal');
+  var nome = $('pNome'), cel = $('pCel'), cep = $('pCep'), num = $('pNum'), noNum = $('pNoNum'), submit = $('pSubmit');
+  var cepErr = $('pCepErr'), pfCep = $('pfCep'), modalOpen = false, numeroAtual = '';
+
+  function unlock() { document.documentElement.classList.remove('geo-open'); document.body.classList.remove('geo-open'); }
+  function show(el) { el.hidden = false; requestAnimationFrame(function () { requestAnimationFrame(function () { el.classList.add('open'); }); }); }
+  function hide(el, instant) { el.classList.remove('open'); setTimeout(function () { el.hidden = true; }, instant ? 0 : 300); }
+  function openFlow() {
+    overlay.hidden = false; modalOpen = true;
+    document.documentElement.classList.add('geo-open'); document.body.classList.add('geo-open');
+  }
+  function dismissAll() {
+    if (!modalOpen) return;
+    modalOpen = false; hide(stModal, false); hide(ldModal, false);
+    overlay.hidden = true; unlock(); refresh();
+  }
+  overlay.addEventListener('click', dismissAll);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') dismissAll(); });
+  $('stClose').addEventListener('click', dismissAll);
+  $('ldClose').addEventListener('click', dismissAll);
+
+  /* ---- formulário ---- */
+  function valid() {
+    return nome.value.trim().length > 1 && cel.value.replace(/\D/g, '').length >= 10 &&
+      cep.value.replace(/\D/g, '').length === 8 && (noNum.checked || num.value.trim() !== '');
+  }
+  function refresh() { submit.setAttribute('aria-disabled', valid() ? 'false' : 'true'); }
+  function clearErr() { cepErr.textContent = ''; pfCep.classList.remove('err'); }
+  cep.addEventListener('input', function () {
+    var d = cep.value.replace(/\D/g, '').slice(0, 8);
+    cep.value = d.length > 5 ? d.slice(0, 5) + '-' + d.slice(5) : d; clearErr(); refresh();
+  });
+  cel.addEventListener('input', function () {
+    var d = cel.value.replace(/\D/g, '').slice(0, 11), s = d;
+    if (d.length > 2) s = '(' + d.slice(0, 2) + ') ' + d.slice(2, d.length > 10 ? 7 : 6) + (d.length > (d.length > 10 ? 7 : 6) ? '-' + d.slice(d.length > 10 ? 7 : 6) : '');
+    cel.value = s; refresh();
+  });
+  nome.addEventListener('input', refresh); num.addEventListener('input', refresh);
+  noNum.addEventListener('change', function () {
+    num.disabled = noNum.checked; if (noNum.checked) num.value = '';
+    $('pfNum').classList.toggle('dis', noNum.checked); refresh();
+  });
+
+  function consultar() {
+    if (!valid() || modalOpen) return;
+    var raw = cep.value.replace(/\D/g, '');
+    numeroAtual = noNum.checked ? 's/n' : num.value.trim();
+    submit.setAttribute('aria-disabled', 'true');
+    fetch('https://viacep.com.br/ws/' + raw + '/json/')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d.erro) throw new Error('nf');
+        document.documentElement.dataset.numero = numeroAtual;
+        document.documentElement.dataset.endereco = [d.logradouro, d.bairro, d.localidade, d.uf].join(', ');
+        /* CEP único (sem logradouro): abre a seleção de rua */
+        var info = d.logradouro ? null : window.buscarRuas(d);
+        openFlow();
+        if (info) iniciarRuas(d, info); else iniciarConsulta(d);
+      })
+      .catch(function () {
+        cepErr.textContent = 'CEP não encontrado. Confira e tente novamente.';
+        pfCep.classList.add('err'); refresh();
+      });
+  }
+  $('pForm').addEventListener('submit', function (e) { e.preventDefault(); consultar(); });
+
+  /* ---------- Etapa final (por enquanto): consultando disponibilidade ---------- */
+  function iniciarConsulta(d) {
+    var n = numeroAtual;
+    var l1 = [d.logradouro ? d.logradouro + ', ' + n : (n === 's/n' ? 's/n' : 'nº ' + n), d.bairro].filter(Boolean).join(' · ');
+    $('ldL1').textContent = l1;
+    $('ldL2').textContent = d.localidade + ' - ' + d.uf + ' · CEP ' + d.cep;
+    var desk = window.matchMedia('(min-width: 1024px)').matches;
+    var prev = !stModal.hidden ? stModal : null;
+    ldModal.style.minHeight = desk && prev ? prev.offsetHeight + 'px' : '';
+    ldModal.style.width = desk && prev ? prev.offsetWidth + 'px' : '';
+    if (prev) hide(stModal, false);
+    show(ldModal);
+  }
+
+  /* ---------- Fase: selecionar a rua ---------- */
+  var stLead = $('stLead'), stChip = $('stChip'), stWrap = $('stSearchWrap'), stSearch = $('stSearch');
+  var stHint = $('stHint'), stList = $('stList'), stSubmit = $('stSubmit');
+  var ctx = null, escolhida = null;
+
+  function norm(t) { return t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+  function setEscolhida(r) { escolhida = r; stSubmit.setAttribute('aria-disabled', r ? 'false' : 'true'); }
+  function itemRua(r, i, termo) {
+    var label = document.createElement('label'); label.className = 'st-item';
+    var inp = document.createElement('input'); inp.type = 'radio'; inp.name = 'stRua'; inp.value = i;
+    inp.addEventListener('change', function () { setEscolhida(r); });
+    var rd = document.createElement('span'); rd.className = 'st-radio';
+    var nm = document.createElement('span'); nm.className = 'st-name';
+    var k = termo ? norm(r.logradouro).indexOf(norm(termo)) : -1;
+    if (k >= 0) {
+      nm.appendChild(document.createTextNode(r.logradouro.slice(0, k)));
+      var b = document.createElement('b'); b.textContent = r.logradouro.slice(k, k + termo.length); nm.appendChild(b);
+      nm.appendChild(document.createTextNode(r.logradouro.slice(k + termo.length)));
+    } else nm.textContent = r.logradouro;
+    var bb = document.createElement('span'); bb.className = 'st-bairro';
+    bb.textContent = r.bairro + ' · ' + ctx.d.localidade + ' - ' + ctx.d.uf;
+    label.appendChild(inp); label.appendChild(rd); label.appendChild(nm); label.appendChild(bb);
+    return label;
+  }
+  function renderLista(rs, termo) { stList.innerHTML = ''; rs.forEach(function (r, i) { stList.appendChild(itemRua(r, i, termo)); }); }
+  function atualizarBusca() {
+    var t = stSearch.value.trim();
+    setEscolhida(null);
+    if (t.length < 3) {
+      stHint.hidden = false; stHint.textContent = 'Digite pelo menos 3 letras para ver sugestões.';
+      stList.innerHTML = ''; return;
+    }
+    var rs = window.pesquisarRuas(ctx.d, t);
+    stList.innerHTML = ''; stHint.hidden = false;
+    if (!rs.length) {
+      stHint.hidden = true;
+      stList.innerHTML = '<div class="st-empty"><span class="ico"><img src="assets/st-lupa-lg.svg" alt=""></span><p class="t">Não encontramos essa rua</p><p class="s">Confira se o nome está correto ou tente buscar pelo bairro.</p></div>';
+      return;
+    }
+    stHint.textContent = rs.length + (rs.length === 1 ? ' rua encontrada' : ' ruas encontradas');
+    renderLista(rs, t);
+  }
+  function iniciarRuas(d, info) {
+    ctx = { d: d, info: info };
+    setEscolhida(null);
+    stChip.textContent = 'CEP ' + d.cep + ' · ' + (numeroAtual === 's/n' ? 's/n' : 'nº ' + numeroAtual);
+    stSearch.value = ''; stList.innerHTML = '';
+    if (info.modo === 'lista') {
+      stLead.textContent = 'Este CEP atende mais de uma rua. Escolha a sua para confirmarmos a cobertura no seu endereço.';
+      stWrap.hidden = true; stHint.hidden = true; renderLista(info.ruas, '');
+    } else {
+      stLead.textContent = 'Este CEP atende muitas ruas. Busque pelo nome da rua ou do bairro.';
+      stWrap.hidden = false; stHint.hidden = false;
+      stHint.textContent = 'Digite pelo menos 3 letras para ver sugestões.';
+    }
+    show(stModal);
+    setTimeout(function () { if (info.modo === 'busca') stSearch.focus(); }, 320);
+  }
+  stSearch.addEventListener('input', atualizarBusca);
+  $('stClear').addEventListener('click', function () { stSearch.value = ''; atualizarBusca(); stSearch.focus(); });
+  /* lápis: volta à página mantendo CEP e número, com foco no CEP */
+  $('stEdit').addEventListener('click', function () {
+    dismissAll();
+    setTimeout(function () { cep.focus(); }, 320);
+  });
+  stSubmit.addEventListener('click', function () {
+    if (!escolhida) return;
+    iniciarConsulta(Object.assign({}, ctx.d, { logradouro: escolhida.logradouro, bairro: escolhida.bairro }));
+  });
+  refresh();
+})();
+</script>
+</body>
+</html>
