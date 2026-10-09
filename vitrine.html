@@ -277,8 +277,8 @@ h2.hl { font-family: var(--font-hl); font-weight: 700; font-size: 32px; color: v
   .addr-body { flex: 1; padding: 0; gap: 0; justify-content: space-between; min-width: 0; }
   .addr-head-d { display: flex; align-items: flex-start; gap: 16px; padding: 24px 0; }
   .addr-head-d .addr-title { flex: 1; font-size: 24px; color: var(--ink); }
-  .addr-x-d { display: block; width: 32px; height: 32px; flex: none; }
-  .addr-x-d img { width: 32px; height: 32px; }
+  .addr-x-d { display: block; width: 24px; height: 24px; flex: none; }
+  .addr-x-d img { width: 24px; height: 24px; }
   .addr-main { display: flex; flex-direction: column; gap: 18px; padding-bottom: 24px; align-items: center; }
   .addr-main > * { width: 100%; }
   .addr-submit { width: 328px; margin: 0; }
@@ -498,7 +498,7 @@ h2.hl { font-family: var(--font-hl); font-weight: 700; font-size: 32px; color: v
   <div class="addr-body">
     <div class="addr-head-d">
       <h2 class="addr-title" id="addrTitle">Confirme seu endereço</h2>
-      <button class="addr-x-d" id="addrCloseD" type="button" aria-label="Fechar"><img src="assets/d-close.svg" alt=""></button>
+      <button class="addr-x-d" id="addrCloseD" type="button" aria-label="Fechar"><img src="assets/st-close-m.svg" alt=""></button>
     </div>
     <div class="addr-main">
       <p class="addr-lead">Usamos seu endereço apenas para verificar cobertura e ofertas disponíveis.</p>
@@ -523,7 +523,7 @@ h2.hl { font-family: var(--font-hl); font-weight: 700; font-size: 32px; color: v
   <div class="st-body">
     <div class="st-head">
       <h2 class="st-title" id="stTitle">Selecione a sua rua</h2>
-      <button class="st-x" id="stClose" type="button" aria-label="Fechar"><img class="only-d" src="assets/st-close-circle.svg" alt=""><img class="only-m" src="assets/st-close-m.svg" alt=""></button>
+      <button class="st-x" id="stClose" type="button" aria-label="Fechar"><img src="assets/st-close-m.svg" alt=""></button>
     </div>
     <p class="st-lead" id="stLead"></p>
     <button class="st-edit" id="stEdit" type="button" aria-label="Editar CEP e número">
@@ -545,7 +545,7 @@ h2.hl { font-family: var(--font-hl); font-weight: 700; font-size: 32px; color: v
 
 <!-- ===== Modal: consultando disponibilidade ===== -->
 <div class="addr-modal ld-modal" id="ldModal" role="dialog" aria-modal="true" aria-labelledby="ldTitle" aria-live="polite" hidden>
-  <div class="ld-top"><button class="st-x" id="ldClose" type="button" aria-label="Fechar"><img src="assets/st-close-circle.svg" alt=""></button></div>
+  <div class="ld-top"><button class="st-x" id="ldClose" type="button" aria-label="Fechar"><img src="assets/st-close-m.svg" alt=""></button></div>
   <div class="ld-body">
     <img class="ld-spinner" src="assets/st-spinner.svg" alt="">
     <p class="ld-title" id="ldTitle">Consultando disponibilidade…</p>
