@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-visual">
 <title>Vitrine · Aba de ofertas</title>
 <!-- Mondrian Vanilla (CDN) -->
 <link rel="stylesheet" href="https://mondrian.claro.com.br/vanilla/reset.css">
@@ -265,6 +265,19 @@ h2.hl { font-family: var(--font-hl); font-weight: 700; font-size: 32px; color: v
 .addr-art .addr-pin { width: 65.59px; height: 105.8px; left: calc(50% - 50.5px); top: -8px; }
 .addr-body { padding: 0 16px; gap: 18px; }
 .addr-main { display: flex; flex-direction: column; gap: 18px; }
+.addr-scroll { display: flex; flex-direction: column; gap: 18px; }
+/* modal de CEP: cabe sempre no viewport visível (teclado aberto, telas baixas); CTA fixo no rodapé, conteúdo rola */
+#addrModal { max-height: var(--vvh, 100dvh); padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+#addrModal .addr-body { flex: 1 1 auto; min-height: 0; }
+#addrModal .addr-main { flex: 1 1 auto; min-height: 0; }
+#addrModal .addr-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 4px 2px; margin: -4px -2px; }
+#addrModal .addr-submit { flex: none; }
+#addrModal.compact { gap: 12px; padding-bottom: 12px; padding-top: 20px; }
+#addrModal.compact .addr-art { display: none; }
+#addrModal.compact .addr-fields { gap: 16px; }
+#addrModal.compact .addr-main, #addrModal.compact .addr-scroll, #addrModal.compact .addr-body { gap: 12px; }
+#addrModal.compact .addr-submit { margin-top: 0; }
+#addrModal.tiny .addr-lead { display: none; }
 .addr-title { font-size: 22px; }
 .addr-x-d { display: none; }
 .addr-submit { width: 100%; margin-top: 6px; }
@@ -281,6 +294,8 @@ h2.hl { font-family: var(--font-hl); font-weight: 700; font-size: 32px; color: v
   .addr-x-d img { width: 24px; height: 24px; }
   .addr-main { display: flex; flex-direction: column; gap: 18px; padding-bottom: 24px; align-items: center; }
   .addr-main > * { width: 100%; }
+  #addrModal { max-height: none; padding-bottom: 0; }
+  #addrModal .addr-scroll { overflow: visible; padding: 0; margin: 0; }
   .addr-submit { width: 328px; margin: 0; }
   .addr-head-d .addr-title { margin: 0; }
   }
@@ -516,6 +531,7 @@ h2.hl { font-family: var(--font-hl); font-weight: 700; font-size: 32px; color: v
       <button class="addr-x-d" id="addrCloseD" type="button" aria-label="Fechar"><img src="assets/st-close-m.svg" alt=""></button>
     </div>
     <div class="addr-main">
+      <div class="addr-scroll">
       <p class="addr-lead">Usamos seu endereço apenas para verificar cobertura e ofertas disponíveis.</p>
       <form class="addr-form" id="addrForm" novalidate>
         <div class="addr-fields">
@@ -527,6 +543,7 @@ h2.hl { font-family: var(--font-hl); font-weight: 700; font-size: 32px; color: v
         </div>
         <label class="addr-check"><input type="checkbox" id="addrNoNum"><span class="box"><img src="assets/d-checkbox.svg" alt=""></span><span>Meu endereço não possui número.</span></label>
       </form>
+      </div>
       <button class="addr-submit" id="addrSubmit" type="button" aria-disabled="true">Consultar disponibilidade</button>
     </div>
   </div>
@@ -1012,8 +1029,25 @@ h2.hl { font-family: var(--font-hl); font-weight: 700; font-size: 32px; color: v
     modalOpen = false;
     hide(modal, instant); hide(stModal, instant); hide(ldModal, instant); hide(erModal, instant);
   }
+  /* ajusta o modal de CEP ao viewport visível (teclado, barra do navegador) */
+  var vv = window.visualViewport;
+  function fitModal() {
+    if (window.innerWidth >= 1024) {
+      modal.style.removeProperty('--vvh'); modal.style.bottom = '';
+      modal.classList.remove('compact', 'tiny'); return;
+    }
+    var h = vv ? vv.height : window.innerHeight;
+    var off = vv ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop) : 0;
+    modal.style.setProperty('--vvh', h + 'px');
+    modal.style.bottom = off + 'px';
+    modal.classList.toggle('compact', h < 640);
+    modal.classList.toggle('tiny', h < 430);
+  }
+  if (vv) { vv.addEventListener('resize', fitModal); vv.addEventListener('scroll', fitModal); }
+  window.addEventListener('resize', fitModal);
   function openModal() {
     if (modalOpen) return;
+    fitModal();
     bubble.hidden = true;
     overlay.hidden = false;
     document.documentElement.classList.add('geo-open');
@@ -1053,6 +1087,9 @@ h2.hl { font-family: var(--font-hl); font-weight: 700; font-size: 32px; color: v
     if (noNum.checked) num.value = '';
     document.getElementById('fieldNum').style.opacity = noNum.checked ? '.5' : '';
     refresh();
+  });
+  [cep, num].forEach(function (el) {
+    el.addEventListener('focus', function () { setTimeout(function () { fitModal(); el.scrollIntoView({ block: 'nearest' }); }, 250); });
   });
   var numeroAtual = '';
   var erModal = document.getElementById('erModal'), ultimoCep = null;
