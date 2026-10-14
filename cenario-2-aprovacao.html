@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-visual">
+<title>Cenário 2 · Fluxo de aprovação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Inter:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #da291c; --red-dark: #b41e13; --ink: #1f1d1d; --ink-2: #525252; --line: #dbdbdb; --bg: #f8f8f8; --white: #fff;
+  --ok: #006b4f; --ok-light: #ddf9ed; --hl: #ffc722; --hl-light: #fffaad; --hl-dark: #b84d01; --link: #005c66;
+  --font-hl: 'AMX', 'Roboto', Arial, sans-serif; --font: 'Roboto', Arial, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: #ececec; color: var(--ink); font-family: var(--font); line-height: 1.3; -webkit-font-smoothing: antialiased; }
+body.locked { overflow: hidden; }
+h1, h2, p { margin: 0; }
+button { font: inherit; cursor: pointer; border: 0; background: none; padding: 0; color: inherit; }
+img { display: block; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+[hidden] { display: none !important; }
+.app { max-width: 480px; margin: 0 auto; background: var(--white); min-height: 100dvh; }
+
+/* menu */
+.menu-top { height: 44px; padding: 0 16px; display: flex; align-items: center; gap: 4px; font-weight: 500; font-size: 16px; }
+.menu-top .city { display: flex; align-items: center; gap: 8px; }
+.menu-top .city span { display: flex; align-items: center; gap: 4px; }
+.menu-bar { height: 64px; background: var(--red); padding: 0 16px; display: flex; align-items: center; }
+.secure { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 8px 16px; font-size: 12px; font-weight: 500; }
+.intro { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.intro h1 { font: 700 24px/1.3 'Inter', var(--font); }
+.intro p { font-size: 16px; color: var(--ink-2); }
+.cards { padding: 24px 16px; display: flex; flex-direction: column; gap: 16px; }
+.card { background: var(--white); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 16px; filter: drop-shadow(0 0 3.5px rgba(49,49,49,.15)); }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.card-head .t { display: flex; align-items: center; gap: 8px; font: 500 20px/1.3 'Inter', var(--font); }
+.badge-ok { background: var(--ok-light); border-radius: 90px; padding: 8px; display: flex; }
+.hr { border: 0; border-top: 1px solid var(--line); margin: 0; width: 100%; }
+.info { background: var(--bg); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+.info.tight { gap: 8px; }
+.info .k { display: flex; justify-content: space-between; gap: 8px; color: var(--ink-2); font-size: 16px; }
+.info .k .edit { color: var(--red); font-weight: 500; }
+.info .v { font-size: 16px; margin-top: 4px; }
+.info.tight .v { margin-top: 0; }
+.opt { border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.opt.sel { border: 2px solid var(--ok); }
+.opt .row { display: flex; align-items: center; width: 100%; justify-content: center; position: relative; }
+.opt .row b { font: 500 16px/1.3 var(--font-hl); }
+.opt .row .badge-ok { padding: 4px; position: absolute; right: 0; }
+.opt .tip { border-radius: 8px; padding: 8px; width: 100%; text-align: center; font-size: 12px; font-weight: 500; }
+.tip.g { background: var(--ok-light); color: var(--ok); }
+.tip.y { background: var(--hl-light); color: var(--hl-dark); }
+.rules { font: 500 12px var(--font-hl); color: var(--ink-2); text-decoration: underline; }
+.sub { font-size: 16px; color: var(--ink-2); }
+.sel-field { position: relative; height: 46px; border: 1px solid var(--ink); border-radius: 12px; padding: 5px 17px; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+.sel-field small { font-size: 12px; line-height: 1; }
+.sel-field span { font-size: 16px; font-weight: 500; line-height: 1; }
+.sel-field.dd::after { content: ""; position: absolute; right: 20px; top: 14px; width: 8px; height: 8px; border: solid var(--ink); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.faturas { background: var(--bg); border-radius: 8px; padding: 24px; display: flex; flex-direction: column; gap: 8px; }
+.faturas .h { display: flex; align-items: center; gap: 8px; font: 500 20px/1.3 var(--font-hl); color: #000; }
+.faturas .r { display: flex; justify-content: space-between; font-size: 16px; line-height: 1.5; }
+.faturas .r span:first-child { color: var(--ink-2); }
+.faturas .note { font-size: 12px; line-height: 1.5; color: var(--ink-2); padding-top: 8px; }
+.btn { height: 48px; border-radius: 80px; background: var(--red); color: var(--white); font-weight: 500; font-size: 16px; padding: 8px 24px; display: flex; align-items: center; justify-content: center; width: 100%; text-align: center; border: 1px solid var(--red); }
+.btn.sale { background: var(--hl); border-color: var(--hl); color: var(--ink); }
+.btn[aria-disabled="true"] { opacity: .32; cursor: default; }
+.foot-light { background: var(--bg); padding: 34px 24px; display: flex; flex-direction: column; gap: 18px; }
+.foot-light .tt { font: 500 16px/24px var(--font-hl); }
+.foot-light .tx { font: 400 16px/24px var(--font-hl); color: var(--ink-2); margin-top: 5px; }
+.acc { background: #fff; border: 1px solid var(--line); padding: 24px; display: flex; justify-content: space-between; align-items: center; gap: 24px; font-weight: 500; font-size: 16px; margin-top: -1px; }
+.acc:first-child { border-radius: 12px 12px 0 0; margin-top: 0; }
+.acc:last-child { border-radius: 0 0 12px 12px; }
+.foot-red { background: var(--red); color: #fff; height: 176px; padding: 16px 16px 0; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; font-size: 12px; font-weight: 500; }
+.foot-red .lk { display: flex; gap: 16px; align-items: center; text-decoration: underline; }
+.foot-red .libras { position: relative; width: 24px; height: 24px; background: #204f8f; border: 1px solid #fff; border-radius: 4px; }
+.foot-red .libras img { position: absolute; left: 3px; top: 3px; width: 24px; height: 24px; }
+
+/* overlay + bottom sheet */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 100; opacity: 0; transition: opacity .25s ease; }
+.overlay.open { opacity: 1; }
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; margin: 0 auto; z-index: 101; width: 100%; max-width: 480px; max-height: var(--vvh, 100dvh); background: var(--white); border-radius: 24px 24px 0 0; display: flex; flex-direction: column; transform: translateY(105%); transition: transform .3s ease; }
+.sheet.open { transform: translateY(0); }
+.sheet-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 32px 16px 24px; display: flex; flex-direction: column; gap: 12px; }
+.sheet-head { display: flex; gap: 12px; align-items: flex-start; }
+.sheet-head h2 { flex: 1; font: 700 20px/1.3 var(--font-hl); }
+.sheet-head .x { width: 24px; height: 24px; flex: none; }
+.sheet-txt { font-size: 16px; color: #4d4f59; }
+.sheet-foot { display: flex; flex-direction: column; gap: 16px; align-items: center; flex: none; padding: 20px 16px max(20px, env(safe-area-inset-bottom)); box-shadow: 0 -4px 8px rgba(0,0,0,.08); background: #fff; }
+
+.field { position: relative; height: 46px; border: 1px solid var(--ink); border-radius: 12px; background: var(--white); }
+.field input { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; border-radius: 12px; padding: 0 17px; font: 500 16px/1 var(--font); color: var(--ink); outline: 0; }
+.field input::placeholder { color: var(--ink); opacity: 1; }
+.field label { position: absolute; left: 17px; top: 6px; font-size: 12px; line-height: 1; display: none; pointer-events: none; }
+.field input:not(:placeholder-shown) { padding-top: 18px; padding-right: 52px; }
+.field input:not(:placeholder-shown) + label { display: block; }
+.field:focus-within { box-shadow: 0 0 0 .5px var(--ink); }
+.field.err { border-color: var(--red); }
+.field.busy input { pointer-events: none; }
+.err-msg { color: var(--red); font-size: 12px; font-weight: 500; margin-top: 4px; }
+.sol { position: absolute; right: 17px; top: 10px; width: 24px; height: 25px; pointer-events: none; }
+.sol .p { position: absolute; }
+.sol.spin { animation: rot 1s linear infinite; }
+@keyframes rot { to { transform: rotate(360deg); } }
+.sol .a { inset: 44.63% 43.93% 0 0; }
+.sol .b { inset: 59.8% .01% 28.44% 64.37%; }
+.sol .c { inset: 0 64.39% 65.98% 23.57%; }
+.sol .d { inset: 6.59% 9.08% 53.34% 49.86%; }
+.sol img { display: block; width: 100%; height: 100%; }
+.found { background: var(--bg); border-radius: 8px; padding: 16px; }
+.found .k { color: var(--ink-2); font-size: 16px; }
+.found .v { font-size: 16px; margin-top: 4px; }
+.fields { display: flex; flex-direction: column; gap: 12px; }
+.flex-card { border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.18); padding: 24px; display: flex; flex-direction: column; gap: 24px; margin-top: 12px; }
+.flex-top { display: flex; flex-direction: column; gap: 8px; }
+.flex-name { display: flex; align-items: center; gap: 4px; font: 700 16px/1.3 var(--font); color: var(--ink-2); }
+.flex-sub { font-size: 14px; line-height: 18px; color: var(--ink-2); margin-top: 8px; }
+.flex-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 18px; margin-top: 8px; }
+.flex-price { display: flex; align-items: baseline; gap: 16px; }
+.flex-price .l { font-size: 14px; color: var(--ink-2); font-weight: 500; }
+.flex-price .p { font: 700 20px/1.3 var(--font-hl); }
+.flex-price .p small { font-size: 12px; }
+.sheet-foot.flex { box-shadow: none; padding-top: 20px; }
+.link-btn { font-size: 16px; line-height: 21px; padding: 0; text-decoration: underline; color: var(--ink); }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 300; background: #1f1d1d; color: #fff; padding: 12px 16px; border-radius: 10px; font-size: 14px; max-width: 90%; text-align: center; }
+.fade { animation: fade .25s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.done { text-align: center; padding: 16px 0; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.done .ok { width: 48px; height: 48px; border-radius: 50%; background: var(--ok); color: #fff; font-size: 24px; display: flex; align-items: center; justify-content: center; }
+
+.loading { position: fixed; inset: 0; background: rgba(255,255,255,.85); z-index: 150; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; font-weight: 500; }
+.loading .spin { width: 36px; height: 36px; border: 4px solid var(--line); border-top-color: var(--red); border-radius: 50%; animation: rot .8s linear infinite; }
+.proto { position: fixed; top: 8px; right: 8px; z-index: 200; background: #1f1d1d; color: #fff; font-size: 13px; border-radius: 10px; max-width: 280px; }
+.proto summary { padding: 8px 12px; cursor: pointer; font-weight: 500; }
+.proto .body { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 8px; }
+.proto .hint { opacity: .75; font-size: 12px; }
+.proto button { background: #fff; color: #1f1d1d; border-radius: 6px; padding: 6px 10px; font-size: 13px; align-self: flex-start; }
+</style>
+</head>
+<body>
+<details class="proto">
+  <summary>⚙ Protótipo</summary>
+  <div class="body">
+    <p class="hint">Clique em “Confirmar e fechar pedido”.  Qualquer CPF com 11 dígitos é aceito.</p>
+    <button type="button" id="btnReset">Reiniciar cenário</button>
+  </div>
+</details>
+
+<div class="app" id="app">
+  <header>
+    <div class="menu-top"><div class="city"><img src="assets/ck-localizacao.svg" width="24" height="24" alt=""><span>City/UF/CEP<img src="assets/ck-seta-baixo.svg" width="24" height="24" alt=""></span></div></div>
+    <div class="menu-bar"><img src="assets/ck-brand-claro.svg" alt="Claro" width="75" height="32"></div>
+  </header>
+
+  <div class="secure"><span>Ambiente de compra segura.</span><img src="assets/ck-cadeado.svg" width="24" height="24" alt=""></div>
+  <div class="intro">
+    <h1>Vamos lá!</h1>
+    <p>Precisamos de algumas informações, vai levar menos de 2 minutos para completar:</p>
+  </div>
+
+  <div class="cards">
+    <section class="card">
+      <div class="card-head"><div class="t"><img src="assets/ck-pessoa2.svg" width="24" height="24" alt="">Informe seus dados</div><div class="badge-ok"><img src="assets/ck-check.svg" width="24" height="24" alt=""></div></div>
+      <hr class="hr">
+      <div class="info">
+        <div><div class="k"><span>CPF</span><span class="edit">Editar</span></div><p class="v">389.831.768-49</p></div>
+        <div><div class="k"><span>Nome completo</span></div><p class="v">John Doe</p></div>
+        <div><div class="k"><span>E-mail</span></div><p class="v">johndoe@gmail.com</p></div>
+        <div><div class="k"><span>Celular</span></div><p class="v">(11) 94456-3572</p></div>
+        <div><div class="k"><span>RG</span></div><p class="v">25.740.836-8</p></div>
+        <div><div class="k"><span>Nascimento</span></div><p class="v">03/04/1998</p></div>
+        <div><div class="k"><span>Nome da mãe completo</span></div><p class="v">Joanna Doe</p></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><div class="t"><img src="assets/ck-casa.svg" width="24" height="24" alt="">Confirme seu endereço</div><div class="badge-ok"><img src="assets/ck-check.svg" width="24" height="24" alt=""></div></div>
+      <hr class="hr">
+      <div class="info tight">
+        <div class="k"><span>Endereço</span><span class="edit">Editar</span></div>
+        <p>Rua Pais de Araújo, Itaim Bibi, São Paulo, SP 04531-941 Brasil</p>
+        <div class="k"><span>Complemento</span></div><p>Ap 203</p>
+        <div class="k"><span>Referência</span></div><p>Casa azul</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><div class="t"><img src="assets/ck-calendario.svg" width="24" height="24" alt="">Agende sua instalação</div><div class="badge-ok"><img src="assets/ck-check.svg" width="24" height="24" alt=""></div></div>
+      <hr class="hr">
+      <div class="info tight">
+        <div class="k"><span>Agendamento</span><span class="edit">Editar</span></div>
+        <p>Sábado 13/04 (Manhã — Das 08:00 — Até 12:00)</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><div class="t" style="font-family:var(--font-hl)"><img src="assets/ck-pagamento.svg" width="24" height="24" alt="">Cadastre seu pagamento</div></div>
+      <hr class="hr">
+      <p class="sub">Selecione abaixo como deseja realizar os pagamentos</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="opt"><div class="row"><b>Débito em conta</b></div><hr class="hr"><div class="tip g"><b>Você ganha R$ 5,00 de desconto</b> por mês.<br>É mais prático no débito automático.</div></div>
+        <p class="rules">Consulte regras</p>
+      </div>
+      <div class="opt sel"><div class="row"><b>Boleto bancário</b><span class="badge-ok"><img src="assets/ck-check.svg" width="24" height="24" alt=""></span></div><hr class="hr"><div class="tip y">Você terá <b>R$ 5,00 de custos adicionais</b> por mês na sua fatura.</div></div>
+      <div class="sel-field dd"><small>Dia de vencimento da fatura</small><span>20</span></div>
+      <div class="faturas">
+        <div class="h"><img src="assets/ck-pagamento.svg" width="24" height="24" alt="">Próximas 3 faturas</div>
+        <p style="font-size:16px;padding-bottom:8px">Considerando seu plano, taxas e compras extras, se houver.</p>
+        <div class="r"><span>Mês 05</span><span>Proporcional*</span></div>
+        <div class="r"><span>Mês 06</span><span>R$ 99,90</span></div>
+        <div class="r"><span>Mês 07</span><span>R$ 99,90</span></div>
+        <p class="note">*O valor a ser pago é proporcional ao tempo entre a data de instalação e a data de vencimento.</p>
+      </div>
+      <hr class="hr">
+      <p class="sub">Selecione abaixo a forma como deseja receber a sua fatura.</p>
+      <div class="opt sel"><div class="row"><b>Fatura digital por e-mail</b><span class="badge-ok"><img src="assets/ck-check.svg" width="24" height="24" alt=""></span></div><hr class="hr"><div class="tip g">Você vai receber a sua fatura por e-mail<br><b>sem custos adicionais</b> com <b>mais segurança</b>.</div></div>
+      <div class="opt"><div class="row"><b>Fatura impressa por correio</b></div><hr class="hr"><div class="tip y">Receber a sua fatura por correio terá<br><b>R$ 5,00</b> de custos adicionais <b>por mês</b>.</div></div>
+      <div class="sel-field"><small>E-mail</small><span>teste@gmail.com</span></div>
+      <button class="btn sale" id="btnFinish" type="button">Confirmar e fechar pedido</button>
+    </section>
+  </div>
+
+  <div class="foot-light">
+    <div><p class="tt">Residencial</p><p class="tx">Ofertas válidas exclusivamente nas contratações através do site para pessoa física, sujeitas à análise de crédito e disponibilidade técnica dos serviços no endereço solicitado.</p></div>
+    <div>
+      <div class="acc">Condições gerais residencial<img src="assets/ck-baixo.svg" width="24" height="24" alt=""></div>
+      <div class="acc">Banda larga fixa<img src="assets/ck-baixo.svg" width="24" height="24" alt=""></div>
+      <div class="acc">Tv<img src="assets/ck-baixo.svg" width="24" height="24" alt=""></div>
+      <div class="acc">Telefonia Fixa<img src="assets/ck-baixo.svg" width="24" height="24" alt=""></div>
+      <div class="acc">Multi<img src="assets/ck-baixo.svg" width="24" height="24" alt=""></div>
+      <div class="acc">Portabilidade<img src="assets/ck-baixo.svg" width="24" height="24" alt=""></div>
+      <div class="acc">Planos para empresas<img src="assets/ck-baixo.svg" width="24" height="24" alt=""></div>
+    </div>
+  </div>
+  <div class="foot-red">
+    <img src="assets/ck-footer-logo.png" width="48" height="48" alt="" style="object-fit:cover">
+    <div class="lk"><span>Política de Privacidade</span><span>Portal de Privacidade</span><span>GARI</span><span class="libras"><img src="assets/ck-libras.svg" alt="Libras"></span></div>
+    <div>©2024 Claro. Todos os direitos reservados<br>CNPJ: 40.432.544/0001-47<br>Rua Henri Dunant, 780 - São Paulo - SP</div>
+  </div>
+</div>
+
+<div class="loading" id="loading" role="status" hidden><div class="spin"></div><span id="loadingText">Analisando seu pedido…</span></div>
+
+<!-- Etapa 1–3: modal de recusa (bottom sheet) -->
+<div class="overlay" id="overlay" hidden></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div class="sheet-body" id="sheetBody">
+    <div class="sheet-head">
+      <h2 id="sheetTitle">Não conseguimos aprovar este pedido neste CPF</h2>
+    </div>
+    <p class="sheet-txt" id="sheetTxt">Você pode alterar a titularidade do pedido informando o CPF de outra pessoa.</p>
+
+    <div>
+      <div class="field" id="fCpf">
+        <input id="cpf" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="CPF do novo titular" aria-describedby="cpfErr">
+        <label for="cpf">CPF do novo titular</label>
+        <span class="sol" id="sol" hidden aria-hidden="true">
+          <span class="p a"><img src="assets/ck-sol-1.svg" alt=""></span><span class="p b"><img src="assets/ck-sol-2.svg" alt=""></span><span class="p c"><img src="assets/ck-sol-3.svg" alt=""></span><span class="p d"><img src="assets/ck-sol-4.svg" alt=""></span>
+        </span>
+      </div>
+      <p class="err-msg" id="cpfErr" role="alert" hidden></p>
+    </div>
+
+    <!-- Etapa 3 -->
+    <div class="fade" id="step3" hidden>
+      <div class="found" style="margin-bottom:12px"><p class="k">Nome completo</p><p class="v" id="foundName"></p></div>
+      <div class="fields">
+        <div><div class="field" id="fMail"><input id="mail" type="email" inputmode="email" autocomplete="off" placeholder="E-mail do novo titular"><label for="mail">E-mail do novo titular</label></div><p class="err-msg" id="mailErr" hidden>Informe um e-mail válido.</p></div>
+        <div><div class="field" id="fPhone"><input id="phone" type="tel" inputmode="numeric" autocomplete="off" maxlength="15" placeholder="Celular do novo titular"><label for="phone">Celular do novo titular</label></div><p class="err-msg" id="phoneErr" hidden>Informe um celular com DDD.</p></div>
+      </div>
+    </div>
+
+    <!-- Etapa final: segunda recusa → alternativa Claro Flex -->
+    <div class="fade" id="flexView" hidden>
+      <h2 style="font:700 20px/1.3 var(--font-hl)">Não conseguimos aprovar este pedido, mas temos uma alternativa</h2>
+      <p class="sheet-txt" style="margin-top:12px">No momento não é possível contratar a <b style="font-weight:500">Fibra 600 Mega</b> neste CPF. Preparamos uma opção alternativa para você.</p>
+      <div class="flex-card">
+        <div>
+          <div class="flex-name">
+            <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="11" fill="#fde0de"/><path d="M5.2 9.3a8.2 8.2 0 0 1 11.6 0M7.4 11.6a5 5 0 0 1 7.2 0M9.6 13.8a1.9 1.9 0 0 1 2.8 0" fill="none" stroke="#da291c" stroke-width="1.4" stroke-linecap="round"/><circle cx="11" cy="16" r="1" fill="#da291c"/></svg>
+            <span>Internet 200GB - Claro Flex</span>
+          </div>
+          <p class="flex-sub">Internet pré paga no cartão de crédito</p>
+          <ul class="flex-list"><li>✓ Característica 1</li><li>✓ Característica 2</li><li>✓ Característica 3</li></ul>
+        </div>
+        <div class="flex-price"><span class="l">Valor mensal</span><span class="p">R$ 99,90<small>/mês</small></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="sheet-foot flex" id="flexFoot" hidden>
+    <button class="btn" id="btnFlex" type="button" style="background:var(--red)">Contratar Claro Flex</button>
+    <button class="link-btn" id="btnSkip" type="button">Prefiro não continuar</button>
+  </div>
+  <div class="sheet-foot" id="sheetFoot">
+    <button class="btn sale" id="btnSend" type="button" aria-disabled="true" hidden>Fechar pedido com estes dados</button>
+    <button class="btn" id="btnNext" type="button" aria-disabled="true">Avançar</button>
+    <button class="link-btn" id="btnSkip1" type="button">Prefiro não continuar</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var PERSON = { '52998224725': 'Carlos Eduardo Lima', '11144477735': 'Ana Paula Souza', '39053344705': 'Roberto Alves Pereira' };
+  var timer = null, busy = false, attempt = 1, loadTimer = null;
+
+  function maskName(n) { return n.split(' ').map(function (w) { return w.length <= 3 ? w : w.slice(0, 3) + new Array(w.length - 2).join('*'); }).join(' '); }
+  function maskCpf(v) { v = v.replace(/\D/g, '').slice(0, 11); return v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2'); }
+  function setErr(f, m, text) { $(f).classList.toggle('err', !!text); $(m).hidden = !text; if (text) $(m).textContent = text; }
+
+  // Etapa 1 — abre o modal de recusa
+  var TXT = {
+    1: 'Você pode alterar a titularidade do pedido informando o CPF de outra pessoa.',
+    2: 'O novo titular também não foi aprovado. Você pode tentar com mais um CPF.'
+  };
+  function open() {
+    attempt = 1;
+    reset();
+    $('overlay').hidden = false; $('sheet').hidden = false;
+    document.body.classList.add('locked');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { $('overlay').classList.add('open'); $('sheet').classList.add('open'); }); });
+  }
+  function close() {
+    $('overlay').classList.remove('open'); $('sheet').classList.remove('open');
+    document.body.classList.remove('locked');
+    setTimeout(function () { $('overlay').hidden = true; $('sheet').hidden = true; }, 300);
+  }
+  function reset() {
+    clearTimeout(timer); busy = false;
+    $('cpf').value = ''; $('mail').value = ''; $('phone').value = '';
+    setErr('fCpf', 'cpfErr', ''); setErr('fMail', 'mailErr', ''); setErr('fPhone', 'phoneErr', '');
+    $('fCpf').classList.remove('busy'); $('sol').hidden = true; $('sol').classList.remove('spin');
+    $('step3').hidden = true; $('flexView').hidden = true; $('flexFoot').hidden = true; $('sheetFoot').hidden = false;
+    document.querySelector('.sheet-head').hidden = false; $('sheetTxt').hidden = false;
+    $('sheetTxt').textContent = TXT[attempt];
+    $('btnNext').hidden = false; $('btnSend').hidden = true; $('btnSend').setAttribute('aria-disabled', 'true');
+    $('fCpf').parentNode.hidden = false;
+  }
+
+  // Etapa 2 — logo gira ~1s simulando o processamento do CPF; depois avança sozinho
+  $('cpf').addEventListener('input', function () {
+    if (busy) return;
+    this.value = maskCpf(this.value);
+    var d = this.value.replace(/\D/g, '');
+    setErr('fCpf', 'cpfErr', '');
+    $('btnNext').setAttribute('aria-disabled', String(d.length !== 11));
+    if (d.length < 11) return;
+    process(d);
+  });
+  $('btnNext').addEventListener('click', function () {
+    var d = $('cpf').value.replace(/\D/g, '');
+    if (busy || d.length !== 11) return;
+    process(d);
+  });
+  function process(d) {
+    busy = true;
+    $('fCpf').classList.add('busy'); $('cpf').blur();
+    $('sol').hidden = false; $('sol').classList.add('spin');
+    $('btnNext').setAttribute('aria-disabled', 'true');
+    timer = setTimeout(function () {
+      busy = false; $('sol').classList.remove('spin'); $('sol').hidden = true;
+      $('foundName').textContent = maskName(PERSON[d] || 'Titular Alternativo ' + d.slice(-2));
+      // Etapa 3 — campos adicionais habilitados
+      $('step3').hidden = false; $('btnNext').hidden = true; $('btnSend').hidden = false;
+      $('fCpf').classList.remove('busy');
+      refresh();
+      $('mail').focus();
+    }, 1000);
+  }
+
+  $('phone').addEventListener('input', function () {
+    var v = this.value.replace(/\D/g, '').slice(0, 11);
+    this.value = v.length > 2 ? '(' + v.slice(0, 2) + ') ' + v.slice(2).replace(/(\d{5})(\d)/, '$1-$2') : v;
+    setErr('fPhone', 'phoneErr', ''); refresh();
+  });
+  $('mail').addEventListener('input', function () { setErr('fMail', 'mailErr', ''); refresh(); });
+  function mailOk() { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test($('mail').value); }
+  function phoneOk() { return $('phone').value.replace(/\D/g, '').length === 11; }
+  function refresh() { $('btnSend').setAttribute('aria-disabled', String(!(mailOk() && phoneOk()))); }
+
+  $('btnSend').addEventListener('click', function () {
+    if (!mailOk()) setErr('fMail', 'mailErr', 'Informe um e-mail válido.');
+    if (!phoneOk()) setErr('fPhone', 'phoneErr', 'Informe um celular com DDD.');
+    if (!mailOk() || !phoneOk()) return;
+    // Novo load de análise; aprovado → redirect para a tela de conclusão com dados do novo titular
+    analyze('Estamos analisando os dados…', function () {
+      // Aprovado: segue para a tela de conclusão com os dados do novo titular
+      window.location.href = 'redirecionamento-conclusao.html';
+    });
+  });
+
+  function analyze(text, done) {
+    $('loadingText').textContent = text;
+    $('loading').hidden = false;
+    loadTimer = setTimeout(function () { $('loading').hidden = true; done(); }, 1200);
+  }
+  function showFlex() {
+    document.querySelector('.sheet-head').hidden = true; $('sheetTxt').hidden = true;
+    $('fCpf').parentNode.hidden = true; $('step3').hidden = true; $('sheetFoot').hidden = true;
+    $('flexView').hidden = false; $('flexFoot').hidden = false;
+    $('sheetBody').scrollTop = 0;
+  }
+  function toast(t) {
+    var el = document.createElement('div'); el.className = 'toast'; el.textContent = t; document.body.appendChild(el);
+    setTimeout(function () { el.remove(); }, 3000);
+  }
+  // "Prefiro não continuar" (todos os modais) → página de redirecionamento
+  function leave() { window.location.href = 'redirecionamento.html'; }
+  $('btnSkip').addEventListener('click', leave);
+  $('btnSkip1').addEventListener('click', leave);
+  $('btnFlex').addEventListener('click', function () { close(); toast('Protótipo: segue para a contratação do Claro Flex.'); });
+
+  $('btnFinish').addEventListener('click', function () {
+    if (!$('loading').hidden) return;
+    analyze('Analisando seu pedido…', open);
+  });
+  $('btnReset').addEventListener('click', function () {
+    clearTimeout(loadTimer); $('loading').hidden = true;
+    $('sheet').hidden = true; $('overlay').hidden = true; $('sheet').classList.remove('open'); $('overlay').classList.remove('open');
+    document.body.classList.remove('locked');
+    attempt = 1; reset(); window.scrollTo(0, 0);
+  });
+
+  // mantém o modal dentro da área visível quando o teclado abre
+  function vv() { var h = window.visualViewport ? window.visualViewport.height : window.innerHeight; document.documentElement.style.setProperty('--vvh', h + 'px'); }
+  if (window.visualViewport) { window.visualViewport.addEventListener('resize', vv); vv(); }
+})();
+</script>
+</body>
+</html>

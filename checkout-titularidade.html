@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout · Troca de titularidade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Inter:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #da291c; --red-dark: #b41e13; --ink: #1f1d1d; --ink-2: #525252; --line: #dbdbdb; --bg: #f8f8f8; --white: #fff;
+  --ok: #006b4f; --ok-light: #ddf9ed; --hl: #ffc722; --hl-light: #fffaad; --hl-dark: #b84d01; --link: #005c66;
+  --font-hl: 'AMX', 'Roboto', Arial, sans-serif; --font: 'Roboto', Arial, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: #ececec; color: var(--ink); font-family: var(--font); line-height: 1.3; -webkit-font-smoothing: antialiased; }
+h1, h2, p, ul { margin: 0; }
+button { font: inherit; cursor: pointer; border: 0; background: none; padding: 0; color: inherit; }
+img { display: block; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.app { max-width: 480px; margin: 0 auto; background: var(--white); min-height: 100dvh; position: relative; padding-bottom: 80px; }
+.screen[hidden], [hidden] { display: none !important; }
+
+/* menu */
+.menu-top { height: 44px; padding: 0 16px; display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 16px; }
+.menu-top .city { display: flex; align-items: center; gap: 4px; }
+.menu-bar { height: 64px; background: var(--red); padding: 0 16px; display: flex; align-items: center; }
+.menu-bar img { height: 32px; }
+.secure { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 8px 16px; font-size: 12px; font-weight: 500; }
+.intro { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.intro h1 { font: 700 24px/1.3 'Inter', var(--font); }
+.intro p { font-size: 16px; color: var(--ink-2); }
+.cards { padding: 24px 16px; display: flex; flex-direction: column; gap: 16px; }
+
+/* cards */
+.card { background: var(--white); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 16px; filter: drop-shadow(0 0 3.5px rgba(49,49,49,.15)); }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.card-head .t { display: flex; align-items: center; gap: 8px; font: 500 20px/1.3 'Inter', var(--font); }
+.badge-ok { background: var(--ok-light); border-radius: 90px; padding: 8px; display: flex; }
+.hr { border: 0; border-top: 1px solid var(--line); margin: 0; width: 100%; }
+.info { background: var(--bg); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+.info .k { display: flex; justify-content: space-between; gap: 8px; color: var(--ink-2); font-size: 16px; }
+.info .k .edit { color: var(--red); font-weight: 500; }
+.info .v { font-size: 16px; margin-top: 4px; }
+.info.dim { opacity: .5; }
+.info hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
+.info .g { display: flex; flex-direction: column; gap: 8px; }
+
+/* pagamento */
+.opt { border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.opt.sel { border: 2px solid var(--ok); }
+.opt .row { display: flex; align-items: center; width: 100%; justify-content: center; position: relative; }
+.opt .row b { font: 500 16px/1.3 var(--font-hl); }
+.opt .row .badge-ok { padding: 4px; position: absolute; right: 0; }
+.opt .tip { border-radius: 8px; padding: 8px; width: 100%; text-align: center; font-size: 12px; font-weight: 500; }
+.tip.g { background: var(--ok-light); color: var(--ok); }
+.tip.y { background: var(--hl-light); color: var(--hl-dark); }
+.rules { font: 500 12px var(--font-hl); color: var(--ink-2); text-decoration: underline; }
+.sub { font-size: 16px; color: var(--ink-2); }
+.sel-field { position: relative; height: 46px; border: 1px solid var(--ink); border-radius: 12px; padding: 5px 17px; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+.sel-field small { font-size: 12px; line-height: 1; }
+.sel-field span { font-size: 16px; font-weight: 500; line-height: 1; }
+.sel-field::after { content: ""; position: absolute; right: 20px; top: 14px; width: 8px; height: 8px; border: solid var(--ink); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.faturas { background: var(--bg); border-radius: 8px; padding: 24px; display: flex; flex-direction: column; gap: 8px; }
+.faturas .h { display: flex; align-items: center; gap: 8px; font: 500 20px/1.3 var(--font-hl); color: #000; }
+.faturas .r { display: flex; justify-content: space-between; font-size: 16px; line-height: 1.5; }
+.faturas .r span:first-child { color: var(--ink-2); }
+.faturas .note { font-size: 12px; line-height: 1.5; color: var(--ink-2); padding-top: 8px; }
+.terms { padding: 24px 0; font-size: 16px; }
+.terms a { color: var(--link); text-decoration: underline; }
+
+.btn { height: 48px; border-radius: 80px; background: var(--red); color: var(--white); font-weight: 500; font-size: 16px; padding: 8px 24px; display: flex; align-items: center; justify-content: center; width: 100%; text-align: center; border: 1px solid var(--red); transition: background .15s; }
+.btn:hover { background: var(--red-dark); }
+.btn.sale { background: var(--hl); border-color: var(--hl); color: var(--ink); }
+.btn.sale:hover { background: #f0b800; }
+.btn.ghost { background: transparent; color: var(--red); }
+.btn.ghost:hover { background: #fdecea; }
+.btn[aria-disabled="true"] { opacity: .32; cursor: default; }
+.link { color: var(--ink-2); text-decoration: underline; font-size: 14px; text-align: center; padding: 8px; width: 100%; }
+
+/* rodapé do design */
+.foot-light { background: var(--bg); padding: 34px 24px; display: flex; flex-direction: column; gap: 18px; }
+.foot-light .tt { font: 500 16px/24px var(--font-hl); }
+.foot-light .tx { font: 400 16px/24px var(--font-hl); color: var(--ink-2); margin-top: 5px; }
+.acc { background: #fff; border: 1px solid var(--line); padding: 24px; display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 16px; margin-top: -1px; }
+.acc:first-child { border-radius: 12px 12px 0 0; margin-top: 0; }
+.acc:last-child { border-radius: 0 0 12px 12px; }
+.acc::after { content: ""; width: 8px; height: 8px; border: solid var(--ink); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.foot-red { background: var(--red); color: #fff; padding: 16px 16px 24px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; font-size: 12px; font-weight: 500; }
+.foot-red .lk { display: flex; gap: 16px; align-items: center; text-decoration: underline; }
+.foot-red .libras { position: relative; width: 24px; height: 24px; background: #204f8f; border: 1px solid #fff; border-radius: 4px; }
+.foot-red .libras img { position: absolute; left: 3px; top: 3px; width: 24px; height: 24px; }
+
+/* sticky */
+.sticky { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; max-width: 480px; margin: 0 auto; background: var(--ink); color: #fff; border-radius: 12px 12px 0 0; padding: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 0 12px rgba(49,49,49,.24); }
+.sticky .lb { font-size: 16px; }
+.sticky .pr { font: 700 24px/1 var(--font-hl); display: flex; align-items: flex-end; gap: 4px; }
+.sticky .pr small { font: 400 16px/1.3 var(--font); }
+.sticky .ver { display: flex; align-items: center; gap: 8px; font-size: 16px; }
+
+/* telas do fluxo de titularidade */
+.flow { padding: 24px 16px 40px; display: flex; flex-direction: column; gap: 16px; }
+.flow h1 { font: 700 24px/1.3 'Inter', var(--font); }
+.lead { font-size: 16px; color: var(--ink-2); }
+.notice { border-radius: 12px; padding: 16px; display: flex; gap: 12px; background: var(--hl-light); }
+.notice .ic { flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--hl-dark); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.notice h2 { font: 500 16px/1.3 var(--font); margin-bottom: 4px; color: var(--hl-dark); }
+.notice p { font-size: 14px; color: var(--ink); }
+.attempts { display: flex; gap: 6px; }
+.attempts i { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
+.attempts i.used { background: var(--red); }
+.attempts i.now { background: var(--ink); }
+.attempts-label { font-size: 12px; color: var(--ink-2); margin-top: 6px; }
+.field { position: relative; height: 48px; border: 1px solid var(--ink); border-radius: 12px; background: var(--white); }
+.field input { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; border-radius: 12px; padding: 0 17px; font: 400 16px/1 var(--font); color: var(--ink); outline: 0; }
+.field input::placeholder { color: var(--ink); opacity: 1; }
+.field label { position: absolute; left: 17px; top: 6px; font-size: 12px; line-height: 1; display: none; pointer-events: none; }
+.field input:not(:placeholder-shown) { padding-top: 20px; font-weight: 500; }
+.field input:not(:placeholder-shown) + label { display: block; }
+.field:focus-within { box-shadow: 0 0 0 .5px var(--ink); }
+.field.err { border-color: var(--red); }
+.err-msg { color: var(--red); font-size: 12px; font-weight: 500; margin-top: 4px; }
+.fields { display: flex; flex-direction: column; gap: 20px; }
+.found .tag { color: var(--ok); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+.found .v { font-weight: 500; }
+.big-ic { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: #fff; }
+.big-ic.ok { background: var(--ok); }
+.big-ic.no { background: var(--ink-2); }
+.flex-card { border: 2px solid var(--red); filter: none; }
+.flex-card .badge { align-self: flex-start; background: var(--red); color: #fff; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 500px; }
+.flex-card h2 { font: 500 20px/1.3 var(--font-hl); }
+.flex-card ul { padding-left: 18px; font-size: 14px; color: var(--ink-2); display: flex; flex-direction: column; gap: 4px; }
+.price { font: 700 24px/1.3 var(--font-hl); }
+.price small { font: 400 14px var(--font); color: var(--ink-2); }
+
+.overlay { position: fixed; inset: 0; background: rgba(255,255,255,.85); z-index: 80; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; font-weight: 500; }
+.spin { width: 36px; height: 36px; border: 4px solid var(--line); border-top-color: var(--red); border-radius: 50%; animation: s .8s linear infinite; }
+@keyframes s { to { transform: rotate(360deg); } }
+
+/* painel do protótipo (fora do design) */
+.proto { position: fixed; top: 8px; right: 8px; z-index: 90; background: #1f1d1d; color: #fff; font-size: 13px; border-radius: 10px; max-width: 320px; }
+.proto summary { padding: 8px 12px; cursor: pointer; font-weight: 500; }
+.proto .body { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 10px; }
+.proto label { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.proto select { font: inherit; padding: 4px 6px; border-radius: 6px; }
+.proto .hint { opacity: .7; font-size: 12px; }
+.proto button { background: #fff; color: #1f1d1d; border-radius: 6px; padding: 6px 10px; font-size: 13px; align-self: flex-start; }
+</style>
+</head>
+<body>
+<details class="proto">
+  <summary>⚙ Protótipo</summary>
+  <div class="body">
+    <label>Storyblok · troca de titularidade
+      <select id="cfgSwap"><option value="on">Habilitada</option><option value="off">Desabilitada</option></select></label>
+    <label>Orders · análise 1 (titular original)
+      <select id="res1"><option value="deny">Não aprovada</option><option value="ok">Aprovada</option></select></label>
+    <label>Orders · análise 2 (1º CPF alt.)
+      <select id="res2"><option value="deny">Não aprovada</option><option value="ok">Aprovada</option></select></label>
+    <label>Orders · análise 3 (2º CPF alt.)
+      <select id="res3"><option value="deny">Não aprovada</option><option value="ok">Aprovada</option></select></label>
+    <p class="hint">CPFs válidos p/ teste: 529.982.247-25 · 111.444.777-35 · 390.533.447-05. CPF repetido ou inválido é bloqueado.</p>
+    <button type="button" data-restart>Reiniciar fluxo</button>
+  </div>
+</details>
+
+<div class="app">
+  <header>
+    <div class="menu-top"><div class="city"><img src="assets/ck-localizacao.svg" width="24" height="24" alt=""><span>City/UF/CEP</span><img src="assets/ck-seta-baixo.svg" width="24" height="24" alt=""></div></div>
+    <div class="menu-bar"><img src="assets/ck-brand-claro.svg" alt="Claro" width="75" height="32"></div>
+  </header>
+
+  <!-- 1. Checkout (design Figma 7751:2843) -->
+  <div class="screen" id="sCheckout">
+    <div class="secure"><span>Ambiente de compra segura.</span><img src="assets/ck-cadeado.svg" width="24" height="24" alt=""></div>
+    <div class="intro">
+      <h1>Vamos lá!</h1>
+      <p>Precisamos de algumas informações, vai levar menos de 2 minutos para completar:</p>
+    </div>
+    <div class="cards">
+      <section class="card">
+        <div class="card-head"><div class="t"><img src="assets/ck-pessoa.svg" width="24" height="24" alt="">Informe seus dados</div><div class="badge-ok"><img src="assets/ck-check.svg" width="24" height="24" alt=""></div></div>
+        <hr class="hr">
+        <div class="info">
+          <div><div class="k"><span>CPF</span><span class="edit">Editar</span></div><p class="v">389.831.768-49</p></div>
+          <div><div class="k"><span>Celular</span></div><p class="v">(11) 94456-3572</p></div>
+          <div><div class="k"><span>E-mail</span></div><p class="v">johndoe@gmail.com</p></div>
+          <hr>
+          <div style="opacity:.5"><div class="k"><span>Nome completo</span></div><p class="v">And***** Tar****** dos San***</p></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><div class="t"><img src="assets/ck-casa.svg" width="24" height="24" alt="">Confirme seu endereço</div><div class="badge-ok"><img src="assets/ck-check.svg" width="24" height="24" alt=""></div></div>
+        <hr class="hr">
+        <div class="info" style="gap:8px">
+          <div class="k"><span>Endereço</span><span class="edit">Editar</span></div>
+          <p>Rua Pais de Araújo, Itaim Bibi, São Paulo, SP 04531-941 Brasil</p>
+          <div class="k"><span>Complemento</span></div><p>Ap 203</p>
+          <div class="k"><span>Referência</span></div><p>Casa azul</p>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><div class="t"><img src="assets/ck-calendario.svg" width="24" height="24" alt="">Agende sua instalação</div><div class="badge-ok"><img src="assets/ck-check.svg" width="24" height="24" alt=""></div></div>
+        <hr class="hr">
+        <div class="info" style="gap:8px">
+          <div class="k"><span>Agendamento</span><span class="edit">Editar</span></div>
+          <p>Sábado 13/04 (Manhã — Das 08:00 — Até 12:00)</p>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><div class="t" style="font-family:var(--font-hl)"><img src="assets/ck-pagamento.svg" width="24" height="24" alt="">Cadastre seu pagamento</div></div>
+        <hr class="hr">
+        <p class="sub">Selecione abaixo como deseja realizar os pagamentos</p>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="opt"><div class="row"><b>Débito em conta</b></div><hr class="hr"><div class="tip g"><b>Você ganha R$ 5,00 de desconto</b> por mês.<br>É mais prático no débito automático.</div></div>
+          <p class="rules">Consulte regras</p>
+        </div>
+        <div class="opt sel"><div class="row"><b>Boleto bancário</b><span class="badge-ok"><img src="assets/ck-check.svg" width="24" height="24" alt=""></span></div><hr class="hr"><div class="tip y">Você terá <b>R$ 5,00 de custos adicionais</b> por mês na sua fatura.</div></div>
+        <div class="sel-field"><small>Dia de vencimento da fatura</small><span>20</span></div>
+        <div class="faturas">
+          <div class="h"><img src="assets/ck-pagamento.svg" width="24" height="24" alt="">Próximas 3 faturas</div>
+          <p style="font-size:16px;padding-bottom:8px">Considerando seu plano, taxas e compras extras, se houver.</p>
+          <div class="r"><span>Mês 05</span><span>Proporcional*</span></div>
+          <div class="r"><span>Mês 06</span><span>R$ 99,90</span></div>
+          <div class="r"><span>Mês 07</span><span>R$ 99,90</span></div>
+          <p class="note">*O valor a ser pago é proporcional ao tempo entre a data de instalação e a data de vencimento.</p>
+        </div>
+        <hr class="hr">
+        <p class="sub">Selecione abaixo a forma como deseja receber a sua fatura.</p>
+        <div class="opt sel"><div class="row"><b>Fatura digital por e-mail</b><span class="badge-ok"><img src="assets/ck-check.svg" width="24" height="24" alt=""></span></div><hr class="hr"><div class="tip g">Você vai receber a sua fatura por e-mail<br><b>sem custos adicionais</b> com <b>mais segurança</b>.</div></div>
+        <div class="opt"><div class="row"><b>Fatura impressa por correio</b></div><hr class="hr"><div class="tip y">Receber a sua fatura por correio terá<br><b>R$ 5,00</b> de custos adicionais <b>por mês</b>.</div></div>
+        <div class="sel-field" style="height:46px"><small>E-mail</small><span style="font-weight:500">teste@gmail.com</span></div>
+      </section>
+
+      <p class="terms">Ao clicar em "Confirmar e fechar pedido", declaro, como manifestação de vontade, que tive acesso à <a href="#" onclick="return false">Etiqueta Padrão</a>, li e estou de acordo com o Contrato, composto pelo <a href="#" onclick="return false">Termo de Adesão</a> e pelo <a href="#" onclick="return false">Termo de Condições da Oferta (TCO)</a>. Após a aprovação do pedido, a contratação será formalizada digitalmente para todos os efeitos legais.</p>
+      <button class="btn sale" id="btnFinish" type="button">Confirmar e fechar pedido</button>
+    </div>
+
+    <div class="foot-light">
+      <div><p class="tt">Residencial</p><p class="tx">Ofertas válidas exclusivamente nas contratações através do site para pessoa física, sujeitas à análise de crédito e disponibilidade técnica dos serviços no endereço solicitado.</p></div>
+      <div>
+        <div class="acc">Condições gerais residencial</div><div class="acc">Banda larga fixa</div><div class="acc">Tv</div><div class="acc">Telefonia Fixa</div><div class="acc">Multi</div><div class="acc">Portabilidade</div><div class="acc">Planos para empresas</div>
+      </div>
+    </div>
+    <div class="foot-red">
+      <img src="assets/ck-footer-logo.png" width="48" height="48" alt="" style="object-fit:cover">
+      <div class="lk"><span>Política de Privacidade</span><span>Portal de Privacidade</span><span>GARI</span><span class="libras"><img src="assets/ck-libras.svg" alt="Libras"></span></div>
+      <div>©2024 Claro. Todos os direitos reservados<br>CNPJ: 40.432.544/0001-47<br>Rua Henri Dunant, 780 - São Paulo - SP</div>
+    </div>
+  </div>
+
+  <!-- 2. Não aprovado + novo titular (mesma tela) -->
+  <div class="screen flow" id="sDenied" hidden>
+    <div class="notice" role="alert">
+      <div class="ic" aria-hidden="true">!</div>
+      <div>
+        <h2 id="deniedTitle">Não conseguimos aprovar este pedido neste CPF</h2>
+        <p id="deniedText">Você pode alterar a titularidade do pedido informando o CPF de outra pessoa.</p>
+      </div>
+    </div>
+    <div>
+      <div class="attempts" aria-hidden="true" id="attemptsBar"><i></i><i></i><i></i></div>
+      <p class="attempts-label" id="attemptsLabel"></p>
+    </div>
+
+    <div>
+      <div class="field" id="fCpf">
+        <input id="cpf" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="CPF do novo titular" aria-describedby="cpfErr">
+        <label for="cpf">CPF do novo titular</label>
+      </div>
+      <p class="err-msg" id="cpfErr" role="alert" hidden></p>
+    </div>
+
+    <div class="card found" id="foundCard" hidden>
+      <span class="tag">Dados localizados</span>
+      <div class="info" style="gap:12px">
+        <div><div class="k"><span>Nome completo</span></div><p class="v" id="foundName"></p></div>
+        <div><div class="k"><span>CPF</span></div><p class="v" id="foundCpf"></p></div>
+      </div>
+    </div>
+
+    <div class="fields" id="contactFields" hidden>
+      <div>
+        <div class="field" id="fMail"><input id="mail" type="email" inputmode="email" autocomplete="off" placeholder="E-mail do novo titular"><label for="mail">E-mail do novo titular</label></div>
+        <p class="err-msg" id="mailErr" hidden>Informe um e-mail válido.</p>
+      </div>
+      <div>
+        <div class="field" id="fPhone"><input id="phone" type="tel" inputmode="numeric" autocomplete="off" maxlength="15" placeholder="Celular do novo titular"><label for="phone">Celular do novo titular</label></div>
+        <p class="err-msg" id="phoneErr" hidden>Informe um celular com DDD.</p>
+      </div>
+    </div>
+
+    <button class="btn sale" id="btnConfirm" type="button" aria-disabled="true" hidden>Finalizar pedido com estes dados</button>
+    <button class="link" id="btnEnd" type="button">Não quero informar outro titular · encerrar solicitação</button>
+  </div>
+
+  <!-- 3. Aprovado -->
+  <div class="screen flow" id="sOk" hidden>
+    <div class="big-ic ok" aria-hidden="true">✓</div>
+    <h1>Pedido finalizado!</h1>
+    <p class="lead" id="okText"></p>
+    <button class="btn ghost" type="button" data-restart>Reiniciar protótipo</button>
+  </div>
+
+  <!-- 4. Não foi possível + Flex -->
+  <div class="screen flow" id="sFail" hidden>
+    <div class="big-ic no" aria-hidden="true">!</div>
+    <h1>Não foi possível finalizar sua solicitação</h1>
+    <p class="lead" id="failText"></p>
+    <div class="card flex-card">
+      <span class="badge">Outra opção para você</span>
+      <h2>Claro Internet Flex</h2>
+      <p class="price">R$ 109,90 <small>/mês</small></p>
+      <ul><li>Pagamento via cartão de crédito</li><li>Sem análise de crédito</li><li>Mesma fibra, mesma velocidade</li></ul>
+      <button class="btn" id="btnFlex" type="button">Contratar Internet Flex</button>
+    </div>
+    <button class="link" type="button" data-restart>Encerrar solicitação</button>
+  </div>
+
+  <!-- 5. Encerrado -->
+  <div class="screen flow" id="sEnded" hidden>
+    <div class="big-ic no" aria-hidden="true">–</div>
+    <h1>Solicitação encerrada</h1>
+    <p class="lead">Nenhum pedido foi criado. Você pode retomar quando quiser.</p>
+    <button class="btn ghost" type="button" data-restart>Reiniciar protótipo</button>
+  </div>
+</div>
+
+<div class="sticky" id="sticky">
+  <div><p class="lb">Valor total</p><p class="pr">R$ 159,90 <small>/ mês</small></p></div>
+  <div class="ver"><span>Ver pedido</span><img src="assets/ck-cima.svg" width="24" height="24" alt=""></div>
+</div>
+
+<div class="overlay" id="loading" hidden><div class="spin"></div><span id="loadingText">Analisando seu pedido…</span></div>
+
+<script>
+(function () {
+  var MAX = 3;
+  var $ = function (id) { return document.getElementById(id); };
+  var screens = ['sCheckout', 'sDenied', 'sOk', 'sFail', 'sEnded'];
+  var state;
+
+  // Mock da API de Dados Pessoais
+  var PERSON = {
+    '52998224725': 'Carlos Eduardo Lima',
+    '11144477735': 'Ana Paula Souza',
+    '39053344705': 'Roberto Alves Pereira'
+  };
+
+  function maskName(n) {
+    return n.split(' ').map(function (w) { return w.length <= 3 ? w : w.slice(0, 3) + new Array(w.length - 2).join('*'); }).join(' ');
+  }
+  function maskCpfShown(d) { return '***.' + d.slice(3, 6) + '.***-**'; }
+
+  function reset() {
+    state = { attempt: 1, cpfs: ['original'], person: null };
+    resetHolderForm();
+    show('sCheckout');
+  }
+  function show(id) {
+    screens.forEach(function (s) { $(s).hidden = s !== id; });
+    $('sticky').hidden = id !== 'sCheckout';
+    window.scrollTo(0, 0);
+  }
+  function loading(on, text) { $('loadingText').textContent = text || 'Analisando seu pedido…'; $('loading').hidden = !on; }
+
+  // API Orders (simulada): resultado definido no painel, por tentativa
+  function callOrders() {
+    loading(true, 'Analisando seu pedido…');
+    return new Promise(function (resolve) {
+      setTimeout(function () { loading(false); resolve({ approved: $('res' + state.attempt).value === 'ok' }); }, 1100);
+    });
+  }
+
+  function renderAttempts() {
+    var bars = $('attemptsBar').children, left = MAX - state.attempt;
+    for (var i = 0; i < MAX; i++) bars[i].className = i < state.attempt ? 'used' : (i === state.attempt ? 'now' : '');
+    $('attemptsLabel').textContent = 'Análise ' + state.attempt + ' de ' + MAX + ' · ' + (left === 1 ? 'resta 1 tentativa' : 'restam ' + left + ' tentativas');
+  }
+
+  function onOrdersResult(res) {
+    if (res.approved) {
+      $('okText').textContent = state.attempt === 1
+        ? 'Seu pedido foi aprovado e segue para o agendamento da instalação.'
+        : 'Pedido aprovado em nome do novo titular. Seguimos para o agendamento da instalação.';
+      show('sOk'); return;
+    }
+    // Não aprovada → consulta a configuração do Storyblok
+    var swap = $('cfgSwap').value === 'on';
+    if (!swap || state.attempt >= MAX) {
+      $('failText').textContent = swap
+        ? 'Realizamos as três análises permitidas e não conseguimos aprovar o pedido.'
+        : 'Não conseguimos aprovar o pedido neste CPF.';
+      show('sFail'); return;
+    }
+    $('deniedTitle').textContent = state.attempt === 1 ? 'Não conseguimos aprovar este pedido neste CPF' : 'Não conseguimos aprovar o pedido com este novo titular';
+    $('deniedText').textContent = state.attempt === 1
+      ? 'Você pode alterar a titularidade do pedido informando o CPF de outra pessoa.'
+      : 'Você ainda pode tentar com mais um CPF de outro titular.';
+    resetHolderForm();
+    renderAttempts();
+    show('sDenied');
+  }
+
+  $('btnFinish').addEventListener('click', function () { callOrders().then(onOrdersResult); });
+  $('btnEnd').addEventListener('click', function () { show('sEnded'); });
+  $('btnFlex').addEventListener('click', function () { alert('Protótipo: segue para o checkout da Internet Flex com pagamento via cartão de crédito.'); });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-restart]'), function (b) { b.addEventListener('click', reset); });
+
+  // ---- CPF / contato ----
+  function maskCpf(v) {
+    v = v.replace(/\D/g, '').slice(0, 11);
+    return v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  }
+  function validCpf(c) {
+    if (!/^\d{11}$/.test(c) || /^(\d)\1{10}$/.test(c)) return false;
+    for (var t = 9; t < 11; t++) {
+      var s = 0; for (var i = 0; i < t; i++) s += +c[i] * (t + 1 - i);
+      if (((s * 10) % 11) % 10 !== +c[t]) return false;
+    }
+    return true;
+  }
+  function setErr(field, msg, text) {
+    $(field).classList.toggle('err', !!text);
+    var m = $(msg); m.hidden = !text; if (text) m.textContent = text;
+  }
+  function resetHolderForm() {
+    $('cpf').value = ''; $('mail').value = ''; $('phone').value = '';
+    setErr('fCpf', 'cpfErr', ''); setErr('fMail', 'mailErr', ''); setErr('fPhone', 'phoneErr', '');
+    $('foundCard').hidden = true; $('contactFields').hidden = true; $('btnConfirm').hidden = true;
+    if (state) state.person = null;
+  }
+
+  var lookupId = 0;
+  $('cpf').addEventListener('input', function () {
+    this.value = maskCpf(this.value);
+    var d = this.value.replace(/\D/g, '');
+    lookupId++;
+    $('foundCard').hidden = true; $('contactFields').hidden = true; $('btnConfirm').hidden = true; state.person = null;
+    if (d.length < 11) { setErr('fCpf', 'cpfErr', ''); return; }
+    if (!validCpf(d)) { setErr('fCpf', 'cpfErr', 'CPF inválido. Confira os números.'); return; }
+    if (state.cpfs.indexOf(d) !== -1) { setErr('fCpf', 'cpfErr', 'Este CPF já foi analisado. Informe outro titular.'); return; }
+    setErr('fCpf', 'cpfErr', '');
+    // API de Dados Pessoais (funcionamento atual mantido)
+    var id = lookupId;
+    loading(true, 'Buscando dados…');
+    setTimeout(function () {
+      if (id !== lookupId) return;
+      loading(false);
+      var name = PERSON[d] || 'Titular Alternativo ' + d.slice(-2);
+      state.person = { cpf: d, name: name };
+      $('foundName').textContent = maskName(name);
+      $('foundCpf').textContent = maskCpfShown(d);
+      $('foundCard').hidden = false; $('contactFields').hidden = false; $('btnConfirm').hidden = false;
+      refreshConfirm();
+    }, 800);
+  });
+
+  $('phone').addEventListener('input', function () {
+    var v = this.value.replace(/\D/g, '').slice(0, 11);
+    this.value = v.length > 2 ? '(' + v.slice(0, 2) + ') ' + v.slice(2).replace(/(\d{5})(\d)/, '$1-$2') : v;
+    setErr('fPhone', 'phoneErr', ''); refreshConfirm();
+  });
+  $('mail').addEventListener('input', function () { setErr('fMail', 'mailErr', ''); refreshConfirm(); });
+
+  function mailOk() { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test($('mail').value); }
+  function phoneOk() { return $('phone').value.replace(/\D/g, '').length === 11; }
+  function refreshConfirm() { $('btnConfirm').setAttribute('aria-disabled', String(!(state.person && mailOk() && phoneOk()))); }
+
+  $('btnConfirm').addEventListener('click', function () {
+    if (!mailOk()) setErr('fMail', 'mailErr', 'Informe um e-mail válido.');
+    if (!phoneOk()) setErr('fPhone', 'phoneErr', 'Informe um celular com DDD.');
+    if (!state.person || !mailOk() || !phoneOk()) return;
+    state.cpfs.push(state.person.cpf);
+    state.attempt += 1;
+    // nova chamada à Orders com os dados confirmados
+    callOrders().then(onOrdersResult);
+  });
+
+  reset();
+})();
+</script>
+</body>
+</html>
