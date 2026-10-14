@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-visual">
+<title>Modal consultar CEP · Mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #da291c; --red-dark: #b41e13; --ink: #1f1d1d; --ink-2: #525252; --line: #dbdbdb; --bg: #f8f8f8; --white: #fff;
+  --font-hl: 'AMX', 'Roboto', Arial, sans-serif; --font-base: 'Roboto', Arial, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-base); line-height: 1.3; -webkit-font-smoothing: antialiased; min-height: 100dvh; }
+img { display: block; max-width: none; }
+p, h1, h2 { margin: 0; }
+button { font: inherit; cursor: pointer; border: 0; background: none; padding: 0; }
+.addr-submit:focus, .addr-submit:focus-visible, .addr-x-d:focus, .addr-x-d:focus-visible { outline: none; -webkit-tap-highlight-color: transparent; }
+/* fundo simulando a página atrás do modal */
+.page { padding: 24px 16px; display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
+.page h1 { font-size: 20px; }
+.page p { color: var(--ink-2); font-size: 14px; }
+.open-btn { height: 48px; padding: 0 32px; border-radius: 500px; background: var(--red); color: var(--white); font-weight: 500; font-size: 16px; }
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 100; }
+.overlay[hidden] { display: none; }
+.demo-note { margin-top: 8px; font-size: 14px; color: var(--ink-2); }
+.demo-note[hidden] { display: none; }
+
+/* ---------- Modal de endereço ---------- */
+.addr-modal { position: fixed; z-index: 102; background: var(--white); color: var(--ink); display: flex; }
+.addr-modal[hidden] { display: none; }
+.addr-art { position: relative; background: var(--red-dark); overflow: hidden; flex: none; }
+.addr-map { position: absolute; overflow: hidden; pointer-events: none; }
+.addr-map img { position: absolute; height: 323.93%; left: -58.24%; top: -112.18%; width: 216.64%; max-width: none; }
+.addr-pin { position: absolute; mix-blend-mode: color-dodge; pointer-events: none; }
+.addr-pin img { width: 100%; height: 100%; object-fit: contain; object-position: bottom; }
+.addr-body { display: flex; flex-direction: column; }
+.addr-title { font-family: var(--font-hl); font-weight: 700; color: #000; line-height: 1.3; margin: 0; }
+.addr-lead { font-size: 16px; line-height: 1.3; }
+.addr-form { display: flex; flex-direction: column; gap: 16px; width: 100%; }
+.addr-fields { display: flex; flex-direction: column; gap: 24px; }
+.field { position: relative; height: 48px; border: 1px solid var(--ink); border-radius: 12px; background: var(--white); }
+.field input { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; border-radius: 12px; padding: 0 17px; font: 400 16px/1 var(--font-base); color: var(--ink); outline: 0; }
+.field input::placeholder { color: var(--ink); opacity: 1; }
+.field label { position: absolute; left: 17px; top: 6px; font-size: 12px; line-height: 1; display: none; pointer-events: none; }
+.field input:not(:placeholder-shown) { padding-top: 20px; font-weight: 500; }
+.field input:not(:placeholder-shown) + label { display: block; }
+.field:focus-within { box-shadow: 0 0 0 .5px var(--ink); }
+.field.err { border-color: var(--red); }
+.addr-err { color: var(--red); font-size: 12px; font-weight: 500; margin-top: 4px; min-height: 0; }
+.addr-check { display: flex; gap: 8px; align-items: center; font-weight: 700; font-size: 14px; line-height: 1.5; color: var(--ink-2); cursor: pointer; }
+.addr-check input { position: absolute; opacity: 0; width: 0; height: 0; }
+.addr-check .box { position: relative; width: 24px; height: 24px; flex: none; }
+.addr-check .box img { width: 24px; height: 24px; }
+.addr-check .box::after { content: ""; position: absolute; left: 2px; top: 2px; width: 20px; height: 20px; border-radius: 3px; background: var(--red); display: none; }
+.addr-check .box::before { content: ""; position: absolute; left: 9px; top: 5px; width: 6px; height: 11px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); z-index: 1; display: none; }
+.addr-check input:checked ~ .box::after, .addr-check input:checked ~ .box::before { display: block; }
+.addr-check input:focus-visible ~ .box { outline: 2px solid var(--ink); outline-offset: 2px; }
+.addr-submit { height: 48px; border-radius: 500px; background: var(--red); color: var(--white); font-weight: 500; font-size: 16px; line-height: 1; padding: 16px 32px; display: flex; align-items: center; justify-content: center; border: 0; cursor: pointer; }
+.addr-submit[aria-disabled="true"] { opacity: .32; cursor: default; }
+
+/* mobile: bottom sheet */
+.addr-modal { left: 0; right: 0; bottom: 0; margin: 0 auto; width: 100%; max-width: 480px; flex-direction: column; border-radius: 24px 24px 0 0; box-shadow: -4px 4px 16px rgba(0,0,0,.16); padding-bottom: 24px; gap: 24px; transform: translateY(105%); transition: transform .3s ease; }
+.addr-modal.open { transform: translateY(0); }
+.addr-art { height: 120px; border-radius: 24px 24px 0 0; width: 100%; }
+.addr-art .addr-map { width: 222px; height: 155.37px; left: calc(50% - 111px + 0px); top: 33.59px; }
+.addr-art .addr-pin { width: 65.59px; height: 105.8px; left: calc(50% - 50.5px); top: -8px; }
+.addr-body { padding: 0 16px; gap: 18px; }
+.addr-main { display: flex; flex-direction: column; gap: 18px; }
+.addr-scroll { display: flex; flex-direction: column; gap: 18px; }
+/* modal de CEP: cabe sempre no viewport visível (teclado aberto, telas baixas); CTA fixo no rodapé, conteúdo rola */
+#addrModal { max-height: var(--vvh, 100dvh); padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+#addrModal .addr-body { flex: 1 1 auto; min-height: 0; }
+#addrModal .addr-main { flex: 1 1 auto; min-height: 0; }
+#addrModal .addr-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 4px 2px; margin: -4px -2px; }
+#addrModal .addr-submit { flex: none; }
+#addrModal.compact { gap: 12px; padding-bottom: 12px; padding-top: 20px; }
+#addrModal.compact .addr-art { display: none; }
+#addrModal.compact .addr-fields { gap: 16px; }
+#addrModal.compact .addr-main, #addrModal.compact .addr-scroll, #addrModal.compact .addr-body { gap: 12px; }
+#addrModal.compact .addr-submit { margin-top: 0; }
+#addrModal.tiny .addr-lead { display: none; }
+.addr-title { font-size: 22px; }
+.addr-x-d { display: none; }
+.addr-submit { width: 100%; margin-top: 6px; }
+@media (min-width: 1024px) {
+  .addr-modal { left: 50%; top: 50%; bottom: auto; right: auto; width: 672px; max-width: calc(100% - 32px); margin: 0; flex-direction: row; border-radius: 12px; box-shadow: none; padding: 0 16px 0 0; gap: 16px; align-items: stretch; transform: translate(-50%, -46%); opacity: 0; transition: transform .25s ease, opacity .25s ease; }
+  .addr-modal.open { transform: translate(-50%, -50%); opacity: 1; }
+  .addr-art { width: 296px; height: auto; border-radius: 12px 0 0 12px; }
+  .addr-art .addr-map { width: 340.39px; height: 238.23px; left: 0; top: calc(56.5px + 63.77px); }
+  .addr-art .addr-pin { width: 100.57px; height: 162.23px; left: calc(27px + 92.83px); top: 56.5px; }
+  .addr-body { flex: 1; padding: 0; gap: 0; justify-content: space-between; min-width: 0; }
+  .addr-head-d { display: flex; align-items: flex-start; gap: 16px; padding: 24px 0; }
+  .addr-head-d .addr-title { flex: 1; font-size: 24px; color: var(--ink); }
+  .addr-x-d { display: block; width: 24px; height: 24px; flex: none; }
+  .addr-x-d img { width: 24px; height: 24px; }
+  .addr-main { display: flex; flex-direction: column; gap: 18px; padding-bottom: 24px; align-items: center; }
+  .addr-main > * { width: 100%; }
+  #addrModal { max-height: none; padding-bottom: 0; }
+  #addrModal .addr-scroll { overflow: visible; padding: 0; margin: 0; }
+  .addr-submit { width: 328px; margin: 0; }
+  .addr-head-d .addr-title { margin: 0; }
+  }
+
+
+
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Modal consultar CEP · Mobile</h1>
+  <p>Referência do modal de CEP e número. Abra no celular e toque no campo de CEP para ver o botão sempre visível com o teclado aberto.</p>
+  <button class="open-btn" id="openBtn" type="button">Abrir modal</button>
+  <p class="demo-note" id="demoNote" hidden>Protótipo: aqui o fluxo continuaria para a consulta de disponibilidade.</p>
+</div>
+
+<div class="overlay" id="overlay" aria-hidden="true"></div>
+
+<div class="addr-modal" id="addrModal" role="dialog" aria-modal="true" aria-labelledby="addrTitle" hidden>
+  <div class="addr-art" aria-hidden="true">
+    <div class="addr-map"><img src="assets/m-map.png" alt=""></div>
+    <div class="addr-pin"><img src="assets/m-geomark.png" alt=""></div>
+  </div>
+  <div class="addr-body">
+    <div class="addr-head-d">
+      <h2 class="addr-title" id="addrTitle">Confirme seu endereço</h2>
+      <button class="addr-x-d" id="addrCloseD" type="button" aria-label="Fechar"><img src="assets/st-close-m.svg" alt=""></button>
+    </div>
+    <div class="addr-main">
+      <div class="addr-scroll">
+      <p class="addr-lead">Usamos seu endereço apenas para verificar cobertura e ofertas disponíveis.</p>
+      <form class="addr-form" id="addrForm" novalidate>
+        <div class="addr-fields">
+          <div>
+            <div class="field" id="fieldCep"><input id="addrCep" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="CEP" aria-label="CEP"><label for="addrCep">CEP</label></div>
+            <div class="addr-err" id="addrErr" role="alert"></div>
+          </div>
+          <div class="field" id="fieldNum"><input id="addrNum" autocomplete="off" maxlength="8" placeholder="Número do endereço - Ex: 120" aria-label="Número do endereço"><label for="addrNum">Número</label></div>
+        </div>
+        <label class="addr-check"><input type="checkbox" id="addrNoNum"><span class="box"><img src="assets/d-checkbox.svg" alt=""></span><span>Meu endereço não possui número.</span></label>
+      </form>
+      </div>
+      <button class="addr-submit" id="addrSubmit" type="button" aria-disabled="true">Consultar disponibilidade</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var overlay = document.getElementById('overlay');
+  var modal = document.getElementById('addrModal');
+  var cep = document.getElementById('addrCep'), num = document.getElementById('addrNum');
+  var noNum = document.getElementById('addrNoNum'), submit = document.getElementById('addrSubmit');
+  var note = document.getElementById('demoNote');
+
+  /* ajusta o modal de CEP ao viewport visível (teclado, barra do navegador) */
+  var vv = window.visualViewport;
+  function fitModal() {
+    if (window.innerWidth >= 1024) {
+      modal.style.removeProperty('--vvh'); modal.style.bottom = '';
+      modal.classList.remove('compact', 'tiny'); return;
+    }
+    var h = vv ? vv.height : window.innerHeight;
+    var off = vv ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop) : 0;
+    modal.style.setProperty('--vvh', h + 'px');
+    modal.style.bottom = off + 'px';
+    modal.classList.toggle('compact', h < 640);
+    modal.classList.toggle('tiny', h < 430);
+  }
+  if (vv) { vv.addEventListener('resize', fitModal); vv.addEventListener('scroll', fitModal); }
+  window.addEventListener('resize', fitModal);
+  function open() {
+    overlay.hidden = false; modal.hidden = false; note.hidden = true;
+    fitModal();
+    requestAnimationFrame(function () { requestAnimationFrame(function () { modal.classList.add('open'); }); });
+    setTimeout(function () { cep.focus(); }, 320);
+  }
+  function close() {
+    modal.classList.remove('open'); overlay.hidden = true;
+    setTimeout(function () { modal.hidden = true; }, 300);
+  }
+  function valid() {
+    return cep.value.replace(/\D/g, '').length === 8 && (noNum.checked || num.value.trim() !== '');
+  }
+  function refresh() { submit.setAttribute('aria-disabled', valid() ? 'false' : 'true'); }
+
+  [cep, num].forEach(function (el) {
+    el.addEventListener('focus', function () { setTimeout(function () { fitModal(); el.scrollIntoView({ block: 'nearest' }); }, 250); });
+  });
+  cep.addEventListener('input', function () {
+    var d = cep.value.replace(/\D/g, '').slice(0, 8);
+    cep.value = d.length > 5 ? d.slice(0, 5) + '-' + d.slice(5) : d;
+    refresh();
+  });
+  num.addEventListener('input', refresh);
+  noNum.addEventListener('change', function () {
+    num.disabled = noNum.checked;
+    if (noNum.checked) num.value = '';
+    document.getElementById('fieldNum').style.opacity = noNum.checked ? '.5' : '';
+    refresh();
+  });
+  submit.addEventListener('click', function () { if (valid()) { close(); note.hidden = false; } });
+  document.getElementById('addrCloseD').addEventListener('click', close);
+  overlay.addEventListener('click', close);
+  document.getElementById('openBtn').addEventListener('click', open);
+  refresh();
+  open();
+})();
+</script>
+</body>
+</html>
