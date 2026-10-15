@@ -89,6 +89,12 @@ img { display: block; }
 .sheet-txt { font-size: 16px; color: #4d4f59; }
 .sheet-foot { display: flex; flex-direction: column; gap: 16px; align-items: center; flex: none; padding: 20px 16px max(20px, env(safe-area-inset-bottom)); box-shadow: 0 -4px 8px rgba(0,0,0,.08); background: #fff; }
 
+@media (min-width: 768px) {
+  .sheet { left: 50%; right: auto; top: 50%; bottom: auto; margin: 0; width: 434px; max-width: 434px; max-height: calc(var(--vvh, 100dvh) - 48px); border-radius: 16px; transform: translate(-50%, calc(-50% + 24px)); opacity: 0; transition: transform .25s ease, opacity .25s ease; }
+  .sheet.open { transform: translate(-50%, -50%); opacity: 1; }
+  .sheet-body { padding: 24px 20px 16px; }
+  .sheet-foot { padding: 8px 20px 24px; box-shadow: none; }
+}
 .field { position: relative; height: 46px; border: 1px solid var(--ink); border-radius: 12px; background: var(--white); }
 .field input { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; border-radius: 12px; padding: 0 17px; font: 500 16px/1 var(--font); color: var(--ink); outline: 0; }
 .field input::placeholder { color: var(--ink); opacity: 1; }
@@ -117,8 +123,14 @@ img { display: block; }
 .flex-name { display: flex; align-items: center; gap: 4px; font: 700 16px/1.3 var(--font); color: var(--ink-2); }
 .flex-sub { font-size: 14px; line-height: 18px; color: var(--ink-2); margin-top: 8px; }
 .flex-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 18px; margin-top: 8px; }
-.flex-price { display: flex; align-items: baseline; gap: 16px; }
-.flex-price .l { font-size: 14px; color: var(--ink-2); font-weight: 500; }
+.flex-price { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.flex-price .pr { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.flex-price .pv { display: flex; align-items: flex-start; gap: 2px; font-family: var(--font-hl); font-weight: 700; }
+.flex-price .cur { font-size: 14px; line-height: 1; align-self: flex-end; margin-bottom: 6px; }
+.flex-price .big { font-size: 36px; line-height: 1; }
+.flex-price .cents { font-size: 16px; line-height: 1.2; }
+.flex-price .term { font-size: 12px; line-height: 1.3; color: var(--ink); }
+.flex-price .l { font: 500 16px/1.3 var(--font-hl); color: var(--ink-2); }
 .flex-price .p { font: 700 20px/1.3 var(--font-hl); }
 .flex-price .p small { font-size: 12px; }
 .sheet-foot.flex { box-shadow: none; padding-top: 20px; }
@@ -273,18 +285,18 @@ img { display: block; }
 
     <!-- Etapa final: segunda recusa → alternativa Claro Flex -->
     <div class="fade" id="flexView" hidden>
-      <h2 style="font:700 20px/1.3 var(--font-hl)">Não conseguimos aprovar este pedido, mas temos uma alternativa</h2>
-      <p class="sheet-txt" style="margin-top:12px">No momento não é possível contratar a <b style="font-weight:500">Fibra 600 Mega</b> neste CPF. Preparamos uma opção alternativa para você.</p>
+      <h2 style="font:700 20px/1.3 var(--font-hl)">Houve um problema ao concluir seu pedido.</h2>
+      <p class="sheet-txt" style="margin-top:12px">Não conseguimos continuar com o plano selecionado. Mas encontramos uma alternativa disponível para você.</p>
       <div class="flex-card">
         <div>
           <div class="flex-name">
             <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="11" fill="#fde0de"/><path d="M5.2 9.3a8.2 8.2 0 0 1 11.6 0M7.4 11.6a5 5 0 0 1 7.2 0M9.6 13.8a1.9 1.9 0 0 1 2.8 0" fill="none" stroke="#da291c" stroke-width="1.4" stroke-linecap="round"/><circle cx="11" cy="16" r="1" fill="#da291c"/></svg>
-            <span>Internet 200GB - Claro Flex</span>
+            <span>500 Mega - Claro Flex</span>
           </div>
-          <p class="flex-sub">Internet pré paga no cartão de crédito</p>
-          <ul class="flex-list"><li>✓ Característica 1</li><li>✓ Característica 2</li><li>✓ Característica 3</li></ul>
+          <p class="flex-sub">Internet para sua casa</p>
+          <ul class="flex-list"><li>✓ 6 parcelas no cartão de crédito</li><li>✓ 100% digital pelo app Claro Flex</li><li>✓ Sem burocracia e sem faturas mensais</li></ul>
         </div>
-        <div class="flex-price"><span class="l">Valor mensal</span><span class="p">R$ 99,90<small>/mês</small></span></div>
+        <div class="flex-price"><span class="l">Valor total</span><div class="pr"><div class="pv"><span class="cur">R$</span><span class="big">95</span><span class="cents">,90/mês</span></div><span class="term">Contratação de 6 meses</span></div></div>
       </div>
     </div>
   </div>
@@ -398,7 +410,7 @@ img { display: block; }
     setTimeout(function () { el.remove(); }, 3000);
   }
   // "Prefiro não continuar" (todos os modais) → página de redirecionamento
-  function leave() { window.location.href = 'redirecionamento.html'; }
+  function leave() { window.location.href = 'agradecimento.html'; }
   $('btnSkip').addEventListener('click', leave);
   $('btnSkip1').addEventListener('click', leave);
   $('btnFlex').addEventListener('click', function () { close(); toast('Protótipo: segue para a contratação do Claro Flex.'); });

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agradecemos seu interesse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root { --red: #da291c; --red-dark: #b41e13; --ink: #1f1d1d; --bg: #f8f8f8; --font-hl: 'AMX', 'Roboto', Arial, sans-serif; --font: 'Roboto', Arial, sans-serif; }
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body { min-height: 100dvh; display: flex; flex-direction: column; background: var(--bg); color: var(--ink); font-family: var(--font); line-height: 1.3; -webkit-font-smoothing: antialiased; }
+img { display: block; }
+h1, p { margin: 0; }
+.m-top { background: #fff; height: 44px; padding: 0 16px; display: flex; align-items: center; font-weight: 500; font-size: 16px; }
+.m-top .city { display: flex; align-items: center; gap: 8px; }
+.m-top .city span { display: flex; align-items: center; gap: 4px; }
+.d-top { display: none; }
+.brand-bar { background: var(--red); height: 64px; padding: 0 16px; display: flex; align-items: center; }
+.secure { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 8px 16px; font-size: 12px; font-weight: 500; background: var(--bg); }
+main { flex: 1; padding: 16px 16px 40px; }
+.hero { width: 100%; max-width: 840px; margin: 0 auto; background: #fff; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 16px; filter: drop-shadow(0 0 4px rgba(31,29,29,.16)); }
+.hero h1 { font: 700 28px/1.3 var(--font-hl); }
+.hero p { font-size: 16px; }
+footer { background: var(--red); color: #fff; height: 176px; padding-top: 16px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; font-size: 12px; font-weight: 500; }
+footer .lk { display: flex; gap: 16px; align-items: center; text-decoration: underline; }
+footer .libras { position: relative; width: 24px; height: 24px; background: #204f8f; border: 1px solid #fff; border-radius: 4px; }
+footer .libras img { position: absolute; left: 3px; top: 3px; width: 16px; height: 16px; }
+
+@media (min-width: 768px) {
+  .m-top, .secure { display: none; }
+  .d-top { display: block; background: var(--red-dark); height: 30px; }
+  .d-top .in, .brand-bar .in { max-width: 840px; margin: 0 auto; width: 100%; height: 100%; display: flex; align-items: center; }
+  .d-top .in { color: #fff; font-size: 12px; font-weight: 500; }
+  .brand-bar { height: 48px; padding: 0 16px; }
+  main { padding: 44px 16px 80px; }
+  .hero { padding: 32px; gap: 8px; border-radius: 24px; }
+  .hero h1 { font-size: 20px; }
+  .hero p { font-size: 14px; }
+  footer { flex-direction: row; justify-content: space-between; align-items: flex-start; height: 66px; padding: 20px 60px; text-align: left; }
+  footer .logo { order: 3; }
+  footer .txt { order: 2; }
+}
+</style>
+</head>
+<body>
+  <div class="m-top"><div class="city"><img src="assets/ck-localizacao.svg" width="24" height="24" alt=""><span>São Paulo/SP - 04709-110<img src="assets/ck-seta-baixo.svg" width="16" height="16" alt=""></span></div></div>
+  <div class="d-top"><div class="in">Product context</div></div>
+  <div class="brand-bar"><div class="in"><img src="assets/ck-brand-claro.svg" alt="Claro" width="75" height="32"></div></div>
+  <div class="secure"><span>Ambiente de compra segura.</span><img src="assets/ck-cadeado.svg" width="24" height="24" alt=""></div>
+
+  <main>
+    <section class="hero">
+      <h1>Agradecemos seu interesse</h1>
+      <p>Entendemos que esta opção não atende à sua necessidade no momento. Caso queira, poderá iniciar uma nova consulta futuramente.</p>
+    </section>
+  </main>
+
+  <footer>
+    <img class="logo" src="assets/ck-footer-logo.png" width="48" height="48" alt="" style="object-fit:cover">
+    <div class="lk"><span>Política de Privacidade</span><span>Portal de Privacidade</span><span class="libras"><img src="assets/ck-libras.svg" alt="Libras"></span></div>
+    <div class="txt">©2026 Claro. Todos os direitos reservados<br>CNPJ: 40.432.544/0001-47<br>Rua Henri Dunant, 780 - São Paulo - SP</div>
+  </footer>
+</body>
+</html>
