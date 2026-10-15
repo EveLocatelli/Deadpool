@@ -294,7 +294,6 @@ img { display: block; }
   </div>
   <div class="sheet-foot" id="sheetFoot">
     <button class="btn sale" id="btnSend" type="button" aria-disabled="true" hidden>Fechar pedido com estes dados</button>
-    <button class="btn" id="btnNext" type="button" aria-disabled="true">Avançar</button>
     <button class="link-btn" id="btnSkip1" type="button">Prefiro não continuar</button>
   </div>
 </div>
@@ -334,7 +333,7 @@ img { display: block; }
     $('step3').hidden = true; $('flexView').hidden = true; $('flexFoot').hidden = true; $('sheetFoot').hidden = false;
     document.querySelector('.sheet-head').hidden = false; $('sheetTxt').hidden = false;
     $('sheetTxt').textContent = TXT[attempt];
-    $('btnNext').hidden = false; $('btnSend').hidden = true; $('btnSend').setAttribute('aria-disabled', 'true');
+    $('btnSend').hidden = true; $('btnSend').setAttribute('aria-disabled', 'true');
     $('fCpf').parentNode.hidden = false;
   }
 
@@ -344,25 +343,18 @@ img { display: block; }
     this.value = maskCpf(this.value);
     var d = this.value.replace(/\D/g, '');
     setErr('fCpf', 'cpfErr', '');
-    $('btnNext').setAttribute('aria-disabled', String(d.length !== 11));
     if (d.length < 11) return;
-    process(d);
-  });
-  $('btnNext').addEventListener('click', function () {
-    var d = $('cpf').value.replace(/\D/g, '');
-    if (busy || d.length !== 11) return;
     process(d);
   });
   function process(d) {
     busy = true;
     $('fCpf').classList.add('busy'); $('cpf').blur();
     $('sol').hidden = false; $('sol').classList.add('spin');
-    $('btnNext').setAttribute('aria-disabled', 'true');
     timer = setTimeout(function () {
       busy = false; $('sol').classList.remove('spin'); $('sol').hidden = true;
       $('foundName').textContent = maskName(PERSON[d] || 'Titular Alternativo ' + d.slice(-2));
       // Etapa 3 — campos adicionais habilitados
-      $('step3').hidden = false; $('btnNext').hidden = true; $('btnSend').hidden = false;
+      $('step3').hidden = false; $('btnSend').hidden = false;
       $('fCpf').classList.remove('busy');
       refresh();
       $('mail').focus();
